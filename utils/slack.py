@@ -10,16 +10,17 @@ _ICON = 'https://s3-us-west-2.amazonaws.com/slack-files2/avatars/2018-02-13/3136
 _USER = 'Kware Judge'
 
 
-def notify(message, level='good'):
+def notify(message, level='good', user=_USER):
     """ Sends a post into dedicated slack channel
     using given level and message.
 
     :param message: Message to post.
     :param level: (Optional) Message level.
+    :param user: (Optional) Message poster.
     """
     _payload = {
         'icon_url': _ICON,
-        'username': _USER,
+        'username': user,
         'attachments': [{
             'text': text,
             'color': level,

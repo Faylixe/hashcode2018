@@ -13,5 +13,4 @@ def _solve():
 
 
 if __name__ == '__main__':
-    
     _solve()
