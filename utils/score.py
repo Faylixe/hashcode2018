@@ -4,11 +4,11 @@
 """ Solution scoring functions. """
 
 
-def get_score(instance, solution):
+def get_score(dataset, solution):
     """ Computes the expeceted score for the given
     problem instance / solution pair.
 
-    :param instance: Problem instance.
+    :param dataset: Problem instance.
     :param solution: Solution to get score for.
     :returns: Score of the given solution.
     """

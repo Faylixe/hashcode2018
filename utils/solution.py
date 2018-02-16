@@ -13,6 +13,7 @@ from utils.slack import notify
 _SOLUTION_DIRECTORY = 'solution'
 _CHALLENGER_PATH = 'challenger.score'
 _SOLUTION_FILE = '%s-%s-%s.out'
+_SCORE_FILE = '%s.score'
 _MIN_SCORE = 0
 
 
@@ -79,7 +80,7 @@ def write_solution(dataset, writer, signature='anonymous'):
 
     :param dataset: Dataset to write solution for.
     :param writer: Solution monadic writing function that takes a stream.
-    :param signature: (Optional) Algorithm signature to label solution file with.
+    :param signature: (Optional) Algorithm signature to label file with.
     """
     directory = _get_solution_directory(dataset)
     n = len(filter(isfile, listdir(directory)))
@@ -87,7 +88,9 @@ def write_solution(dataset, writer, signature='anonymous'):
     target = join(directory, name)
     with open(target, 'w') as stream:
         writer(stream)
-    score = get_score(target)
+    with open(_SCORE_FILE % target, 'w') as stream:
+        stream.write(score)
+    score = get_score(dataset, target)
     if score > _get_challenger(directory):
         _set_challenger(directory, score)
         _send_notification(dataset, score)
