@@ -8,6 +8,8 @@ from os.path import join, isfile
 from uuid import uuid4 as uuid
 from zipfile import ZipFile, ZIP_DEFLATED
 
+from selenium import webdriver
+
 _HOST = 'https://hashcodejudge.withgoogle.com/'
 _ARCHIVE_FILE = '/tmp/source-%s-%s.zip'
 _ROOT_FILES = ['requirements.txt', 'run.sh']
@@ -54,16 +56,38 @@ def _create_source_archive(workspace):
     return path
 
 
+class PlatformXPATH(object):
+    """ Simple namespace for XPath constant. """
+
+    LOGIN_BUTTON = '/html/body/div/div/div/md-content/md-card/md-card-actions/button'
+
+
 def _get_driver():
     """
     """
     pass
 
 
-def upload(dataset, solution, workspace):
+class JudgeUploader(object):
     """
-    :param dataset:
-    :param solution:
-    :param workspace:
     """
-    driver = _get_driver()
+
+    def __init__(self):
+        """
+        """
+        self._driver = _get_driver()
+
+    def _authenticate(self):
+        """
+        """
+        self._driver.get(_HOST)
+        self._driver.find_element_by_xpath(PlatformXPATH.LOGIN_BUTTON).click()
+
+
+    def upload(self, dataset, solution, workspace):
+        """
+        :param dataset:
+        :param solution:
+        :param workspace:
+        """
+        pass
