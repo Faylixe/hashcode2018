@@ -12,7 +12,8 @@ from selenium import webdriver
 
 from utils.cookie import get_authenticated_driver
 
-_HOST = 'https://hashcodejudge.withgoogle.com/'
+_HOST = 'https://hashcodejudge.withgoogle.com'
+_PATH = '#/rounds/%s/submissions/
 _ARCHIVE_FILE = '/tmp/source-%s-%s.zip'
 _ROOT_FILES = ['requirements.txt', 'run.sh']
 _UTILS = 'utils'
@@ -58,12 +59,46 @@ def _create_source_archive(workspace):
     return path
 
 
-def upload(self, dataset, solution, workspace):
+class JudgeUploader(object):
+    """ """
+
+    def __init__(self, round):
+        """
+        :param round:
+        """
+        self._url = '%s/%s' % (_HOST, _PATH % round)
+        self._driver = None
+
+    def __enter__(self):
+        """ Context manager initializer. """
+        self._driver = get_authenticated_driver()
+        self._driver.get(self._url)
+        return self
+
+    def __exit__(self, type, value, traceback):
+       """ Context manager exit method. """
+       self._driver.close()
+
+    def open_submission_panel(self):
+        """ """
+        buttons = self._driver.find_elements_by_tagname('button')
+        filtered = filter(buttons, lambda b: b.text == 'Create a new submission')
+        if len(filtered) == 0:
+            raise IOError('No submission button found')
+        filtered[0].click()
+
+
+def upload(round, dataset, solution, workspace):
     """
+    :param round:
     :param dataset:
     :param solution:
     :param workspace:
     """
-    driver = get_authenticated_driver()
-    driver.get(_HOST)
-    # TODO : Locate current contest
+    archive = _create_source_archive(workspace)
+    with JudgeUploader(round) as uploader:
+        uploader.open_submission_panel()        
+        # TODO : Set source archive upload.
+        # TODO : Locate dataset upload form.
+        # TODO : Set solution upload.
+        # TODO : Upload submission.
