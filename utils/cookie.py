@@ -9,11 +9,12 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
-_HOST = 'https://accounts.google.com'
-_PATH = 'signin/v2/identifier'
-_PARAMETERS = 'hl=fr&passive=true&continue=https%3A%2F%2Fwww.google.fr%2F&flowName=GlifWebSignIn&flowEntry=ServiceLogin'
+_MYACCOUNT_DOMAIN = 'myaccount.google.com'
+_MYACCOUNT_URL = 'https://' + _MYACCOUNT_DOMAIN
+_GOOGLE_DOMAIN = 'google.com'
+_GOOGLE_URL = 'https://' + _GOOGLE_DOMAIN
+_LOGIN_URL = 'https://accounts.google.fr/signin/v2/identifier'
 _COOKIE_FILE = 'cookies.pkl'
-_EXPECTED = 'https://www.google.fr'
 
 
 def get_authenticated_driver(
@@ -27,12 +28,16 @@ def get_authenticated_driver(
     :param cookies_path: Path of the cookie file to load.
     :returns: Built driver instance.
     """
-    if not exists(cookie):
+    if not exists(cookies_path):
         raise IOError('No cookie file %s found' % cookies_path)
     driver = driver_supplier()
     with open(cookies_path, 'rb') as stream:
         cookies = load(stream)
-        for cookie in cookies:
+        driver.get(_MYACCOUNT_URL)
+        for cookie in filter(lambda c: c['domain'] == _MYACCOUNT_DOMAIN, cookies):
+            driver.add_cookie(cookie)
+        driver.get(_GOOGLE_URL)
+        for cookie in filter(lambda c: c['domain'] == _GOOGLE_DOMAIN, cookies):
             driver.add_cookie(cookie)
     return driver
 
@@ -57,10 +62,9 @@ class CookieSupplier(object):
 
     def authenticate(self):
         """ Starts authentification and wait until user is logged. """
-        url = '%s/%s?%s' % (_HOST, _PATH, _PARAMETERS)
-        self._driver.get(url)
+        self._driver.get(_LOGIN_URL)
         wait = WebDriverWait(self._driver, 1000)
-        wait.until(lambda driver: driver.current_url.startswith(_EXPECTED))
+        wait.until(lambda driver: driver.current_url.startswith(_MYACCOUNT_URL))
 
 
 if __name__ == '__main__':

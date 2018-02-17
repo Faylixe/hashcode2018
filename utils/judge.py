@@ -13,7 +13,7 @@ from selenium import webdriver
 from utils.cookie import get_authenticated_driver
 
 _HOST = 'https://hashcodejudge.withgoogle.com'
-_PATH = '#/rounds/%s/submissions/
+_PATH = '#/rounds/%s/submissions/'
 _ARCHIVE_FILE = '/tmp/source-%s-%s.zip'
 _ROOT_FILES = ['requirements.txt', 'run.sh']
 _UTILS = 'utils'
@@ -28,8 +28,8 @@ def _build_filelist(directory):
     :returns: List of file found in the given directory, with full path.
     """
     return map(
-        filter(listdir(directory), isfile),
-        lambda f: join(directory, f)
+        lambda f: join(directory, f),
+        filter(isfile, listdir(directory))
     )
 
 
@@ -41,8 +41,8 @@ def _build_archive_filelist(workspace):
     :returns: List of file to archive.
     """
     files = ['requirements.txt', 'run.sh']
-    map(_build_filelist(_UTILS), files.append)
-    map(_build_filelist(join(_WORKSPACE, workspace)), files.append)
+    map(files.append, _build_filelist(_UTILS))
+    map(files.append, _build_filelist(join(_WORKSPACE, workspace)))
     return files
 
 
@@ -55,7 +55,7 @@ def _create_source_archive(workspace):
     suffix = uuid()
     path = _ARCHIVE_FILE % (workspace, suffix)
     with ZipFile(path, 'w', ZIP_DEFLATED) as archive:
-        map(_create_source_archive(workspace), archive.write)
+        map(archive.write, _build_archive_filelist(workspace))
     return path
 
 
