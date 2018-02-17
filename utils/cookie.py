@@ -9,37 +9,10 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 
-_MYACCOUNT_DOMAIN = 'myaccount.google.com'
-_MYACCOUNT_URL = 'https://' + _MYACCOUNT_DOMAIN
-_GOOGLE_DOMAIN = 'google.com'
-_GOOGLE_URL = 'https://' + _GOOGLE_DOMAIN
-_LOGIN_URL = 'https://accounts.google.fr/signin/v2/identifier'
-_COOKIE_FILE = 'cookies.pkl'
+_MYACCOUNT_URL = 'https://myaccount.google.com'
+_LOGIN_URL = 'https://accounts.google.com/signin/v2/sl/pwd?hl=fr&passive=true&continue=https%3A%2F%2Fmyaccount.google.com%2F&flowName=GlifWebSignIn&flowEntry=ServiceLogin'
 
-
-def get_authenticated_driver(
-    driver_supplier=webdriver.Firefox,
-    cookies_path=_COOKIE_FILE):
-    """ Function that creates a webdriver instance
-    authenticated in google services using provided
-    cookie file.
-
-    :param driver_supplier: Function that creates a webdriver instance.
-    :param cookies_path: Path of the cookie file to load.
-    :returns: Built driver instance.
-    """
-    if not exists(cookies_path):
-        raise IOError('No cookie file %s found' % cookies_path)
-    driver = driver_supplier()
-    with open(cookies_path, 'rb') as stream:
-        cookies = load(stream)
-        driver.get(_MYACCOUNT_URL)
-        for cookie in filter(lambda c: c['domain'] == _MYACCOUNT_DOMAIN, cookies):
-            driver.add_cookie(cookie)
-        driver.get(_GOOGLE_URL)
-        for cookie in filter(lambda c: c['domain'] == _GOOGLE_DOMAIN, cookies):
-            driver.add_cookie(cookie)
-    return driver
+COOKIE_FILE = 'cookies.pkl'
 
 
 class CookieSupplier(object):
@@ -70,4 +43,4 @@ class CookieSupplier(object):
 if __name__ == '__main__':
     with CookieSupplier() as supplier:
         supplier.authenticate()
-        supplier.save_cookie(_COOKIE_FILE)
+        supplier.save_cookie(COOKIE_FILE)

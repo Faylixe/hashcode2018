@@ -101,3 +101,5 @@ ENV/
 .mypy_cache/
 *out.source
 *.pkl
+.profile
+print_cookie.py
