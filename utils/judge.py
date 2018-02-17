@@ -56,6 +56,7 @@ def _create_source_archive(workspace):
         map(archive.write, _build_archive_filelist(workspace))
     return path
 
+
 def _create_session(cookies_file=COOKIE_FILE):
     """
     :param cookies_file:
