@@ -10,6 +10,8 @@ from zipfile import ZipFile, ZIP_DEFLATED
 
 from selenium import webdriver
 
+from utils.cookie import get_authenticated_driver
+
 _HOST = 'https://hashcodejudge.withgoogle.com/'
 _ARCHIVE_FILE = '/tmp/source-%s-%s.zip'
 _ROOT_FILES = ['requirements.txt', 'run.sh']
@@ -56,38 +58,12 @@ def _create_source_archive(workspace):
     return path
 
 
-class PlatformXPATH(object):
-    """ Simple namespace for XPath constant. """
-
-    LOGIN_BUTTON = '/html/body/div/div/div/md-content/md-card/md-card-actions/button'
-
-
-def _get_driver():
+def upload(self, dataset, solution, workspace):
     """
+    :param dataset:
+    :param solution:
+    :param workspace:
     """
-    pass
-
-
-class JudgeUploader(object):
-    """
-    """
-
-    def __init__(self):
-        """
-        """
-        self._driver = _get_driver()
-
-    def _authenticate(self):
-        """
-        """
-        self._driver.get(_HOST)
-        self._driver.find_element_by_xpath(PlatformXPATH.LOGIN_BUTTON).click()
-
-
-    def upload(self, dataset, solution, workspace):
-        """
-        :param dataset:
-        :param solution:
-        :param workspace:
-        """
-        pass
+    driver = get_authenticated_driver()
+    driver.get(_HOST)
+    # TODO : Locate current contest
