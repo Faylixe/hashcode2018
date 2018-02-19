@@ -15,6 +15,13 @@ read round
 
 #read workspace
 
+mkdir -p workspace/$WORKSPACE
+if [ ! -f workspace/$WORKSPACE/__init__.py ]
+then
+    touch workspace/$WORKSPACE/__init__.py
+    cp utils/template.py workspace/$WORKSPACE/
+fi
+
 # Export required environment variable.
 echo "export SLACK_WEBHOOK='https://hooks.slack.com/services/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'" >> venv/bin/activate
 echo "export GOOGLE_USERNAME=$username" >> venv/bin/activate

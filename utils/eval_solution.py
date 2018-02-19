@@ -1,16 +1,7 @@
 #!/usr/bin/env python
 # coding: utf8
 
-"""
-    Solution evaluation and managment module.
-
-    Writes a score file for the given dataset.
-    If the score
-
-    :param dataset: Dataset to write solution for.
-    :param writer: Solution monadic writing function that takes a stream.
-    :param signature: (Optional) Algorithm signature to label file with.
-"""
+""" Solution evaluation and managment module. """
 
 from getpass import getuser
 from os import getcwd
@@ -70,6 +61,7 @@ def _send_notification(dataset, score, target):
 
 
 if __name__ == '__main__':
+    """ TODO : Document ."""
     dataset = argv[0]
     solution = argv[1]
     directory = join(_DATASET_PATH, dataset)
