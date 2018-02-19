@@ -4,7 +4,7 @@
 """ Toolkit for automatic submission to judge platform. """
 
 from os import listdir
-from os.path import join, isdirectory, isfile
+from os.path import join, isdir, isfile
 from pickle import load
 from requests import Session
 from uuid import uuid4 as uuid
@@ -39,7 +39,7 @@ def _build_archive_filelist():
     """
     files = ['requirements.txt', 'run.sh']
     map(files.append, _build_filelist(_UTILS))
-    for workspace in filter(isdirectory, listdir(_WORKSPACE)):
+    for workspace in filter(isdir, listdir(_WORKSPACE)):
         map(files.append, _build_filelist(join(_WORKSPACE, workspace)))
     return files
 

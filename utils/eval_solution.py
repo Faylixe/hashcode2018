@@ -40,7 +40,7 @@ def _set_challenger(directory, score):
     :param score: New challenger score.
     """
     path = join(directory, _CHALLENGER_PATH)
-    with open(path, 'r') as stream:
+    with open(path, 'w') as stream:
         stream.write(str(score))
 
 

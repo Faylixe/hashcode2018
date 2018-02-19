@@ -23,7 +23,7 @@ def notify(message, level='good', user=_USER):
         'icon_url': _ICON,
         'username': user,
         'attachments': [{
-            'text': text,
+            'text': message,
             'color': level,
             'mrkdwn_in': ['text']
         }]

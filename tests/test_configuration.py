@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+""" Test utils.configuration """
+
+from utils.configuration import configuration
+
+
+def test_configuration():
+    """ Test configuration attribute. """
+    assert configuration.SELENIUM_DRIVER == 'phantomjs'
+    assert configuration.GOOGLE_USERNAME == 'foo@gmail.com'
+    assert configuration.GOOGLE_PASSWORD == 'bar'
+    assert configuration.SLACK_WEBHOOK == 'http://localhost:6969'
+    assert configuration.ROUND == '1'
