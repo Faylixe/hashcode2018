@@ -103,3 +103,5 @@ ENV/
 *.pkl
 .profile
 print_cookie.py
+
+.vscode

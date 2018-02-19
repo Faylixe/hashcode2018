@@ -3,9 +3,9 @@
 
 """ This modules exposes tools for logging into Slack. """
 
+from configuration import configuration
 from requests import post
 
-_WEBHOOK = 'https://hooks.slack.com/services/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'
 _ICON = 'https://s3-us-west-2.amazonaws.com/slack-files2/avatars/2018-02-13/313621315392_9b0b9b611d28e342530a_132.png'
 _USER = 'Kware Judge'
 
@@ -27,4 +27,4 @@ def notify(message, level='good', user=_USER):
             'mrkdwn_in': ['text']
         }]
     }
-    post(_WEBHOOK, json=_payload)
+    post(configuration.SLACK_WEBHOOK, json=_payload)

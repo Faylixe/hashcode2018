@@ -57,29 +57,67 @@ def _create_source_archive(workspace):
     return path
 
 
-def _create_session(cookies_file=COOKIE_FILE):
-    """
-    :param cookies_file:
-    :returns:
-    """
-    session = Session()
-    with open(cookies_file, 'rb') as stream:
-        cookies = load(stream)
-        for cookie in cookies:
-            session.cookies.set(
-                cookie['name'],
-                cookie['value'],
-                domain=cookie['domain'],
-                path=cookie['path']
-            )
+class JudgeSite(object):
+    """ """
 
-def upload(round, dataset, solution, workspace):
-    """
-    :param round:
-    :param dataset:
-    :param solution:
-    :param workspace:
-    """
-    archive = _create_source_archive(workspace)
-    session = _create_session()
-    #session.post()
+    MYACCOUNT = 'https://myaccount.google.com'
+    LOGIN = 'https://accounts.google.com/signin/v2/sl/pwd'
+    SITE = 'https://hashcodejudge.withgoogle.com'
+    SUBMISSION = SITE + '/#/rounds/%s/submissions/'
+    NEXT_XPATH = '/html/body/div[1]/div[1]/div[2]/div[2]/%s/div[2]/div/div[2]/div[1]/div/content/span'
+    SOURCE_XPATH = '//*[@id="dialogContent_6"]/div/div/judge-upload/div/md-input-container/div[2]/div/button'
+    SUBMISSION_XPATH = '/html/body/div/div/div/md-content/div[1]/md-card/md-card-header/div/button'
+
+    def __init__(self, round):
+        """ Default constructor.
+
+        :param round: Target contest round.
+        """
+        self._url = SUBMISSION % round
+        self._driver = None
+
+    def _get(self, by, value):
+        """ Suger method for element access using driver wait.
+
+        :param by: Selenium by to build locator.
+        :param value: Value of the expected By.
+        :returns: Located element if any.
+        """
+        wait = WebDriverWait(self._driver, 1000)
+        locator = (by, id)
+        condition = EC.presence_of_element_located(locator)
+        return wait.until(condition)
+
+    def login(self, username, password):
+        """ Performs login into Google Services.
+
+        :param username: Google account username (email).
+        :param password: Google account password.
+        """
+        self._driver.get(_LOGIN_URL)
+        username_holder = self._get(By.ID, 'identifierId')
+        username_holder.clear()
+        username_holder.send_keys(username)
+        self._get(By.XPATH, NEXT_XPATH % 'form').click()
+        password_holder = self._get(By.NAME, 'password')
+        password_holder.clear()
+        password_holder.send_keys(password)
+        self._get(By.XPATH, NEXT_XPATH % 'div').click()
+        wait = WebDriverWait(self._driver, 1000)
+        wait.until(lambda d: d.current_url.startswith(_MYACCOUNT_URL))
+
+    def upload(self, dataset, solution, workspace):
+        """
+        :param dataset:
+        :param solution:
+        :param workspace:
+        """
+        # Navigate to submission panel.
+        self._driver.get(self._url)
+        self._get(By.XPATH, SUBMISSION_XPATH).click()
+        # Source code upload.
+        archive = _create_source_archive(workspace)
+        self._get(By.ID, 'input_1').send_keys(archive)
+        # Solution upload.
+        self._get(By.ID, 'input_%s' % target).send_keys(solution) # TODO : Check for path.
+        # Submit.
