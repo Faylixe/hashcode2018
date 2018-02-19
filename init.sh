@@ -30,6 +30,7 @@ then
 fi
 
 # Configure virtualenv.
+# TODO : Remove old virtualenv if any ?
 virtualenv venv
 echo "export SLACK_WEBHOOK='https://hooks.slack.com/services/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'" >> venv/bin/activate
 echo "export GOOGLE_USERNAME='$username'" >> venv/bin/activate
@@ -62,7 +63,11 @@ _exec() {
         if [ $? -eq 0 ]
         then
             _commit $1 $2
+        else
+            python utils/slack.py < "Error error on evaluating score for output $output"
         fi
+    else
+        python utils/slack.py < "Execution error on dataset $2 with $WORKSPACE/$1"
     fi
 }
 

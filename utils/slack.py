@@ -3,7 +3,9 @@
 
 """ This modules exposes tools for logging into Slack. """
 
+from getpass import getuser
 from requests import post
+from sys import stdin
 
 from utils.configuration import configuration
 
@@ -31,3 +33,9 @@ def notify(message, level='good', user=_USER):
         }]
     }
     post(configuration.SLACK_WEBHOOK, json=_payload)
+
+
+if __name__ == '__main__':
+    """ Used to send notification from bash. """
+    message = '\n'.join(stdin.readlines())
+    notify(message, level='danger', user=getuser())

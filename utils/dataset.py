@@ -36,3 +36,12 @@ class DatasetReader(object):
         if len(self._lines) == 0:
             raise ValueError()
         return [c for c in self._lines.pop(0)]
+
+
+def load_dataset():
+    """ Loads the dataset from the standard input.
+
+    :returns: Dataset instance in a generic format.
+    """
+    reader = DatasetReader()
+    raise NotImplementedError()

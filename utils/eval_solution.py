@@ -10,7 +10,7 @@ from sys import argv
 
 from utils.configuration import configuration
 from utils.judge import JudgeSite
-from utils.score import get_score
+from utils.score import get_score_from_file
 from utils.slack import notify
 
 __author__ = 'fv'
@@ -21,7 +21,7 @@ _SCORE_FILE = '%s.score'
 _MIN_SCORE = 0
 
 
-def _get_challenger(directory):
+def _get_challenger_score(directory):
     """ Reads a challenger file in the given directory if exists.
     Returning minimum score otherwise.
 
@@ -35,7 +35,7 @@ def _get_challenger(directory):
         return int(stream.read())
 
 
-def _set_challenger(directory, score):
+def _set_challenger_score(directory, score):
     """ Sets the challenger score for the given directory.
 
     :param directory: Directory to write challenger in.
@@ -50,11 +50,11 @@ def _send_notification(dataset, score, target):
     """ Post a notification of new best score.
 
     :param dataset: Dataset new challenger arrived for.
-    :param score: New best score to defeat.
+    :param score: Associated score.
     :param target: Target solution file.
     """
     lines = [
-        'New challenger score for dataset %s : %s' % (dataset, score),
+        'New solution for dataset %s (Score : %s)' % (dataset, score),
         'Solution file : %s' % target
     ]
     user = getuser()
@@ -69,12 +69,12 @@ if __name__ == '__main__':
     directory = join(_DATASET_PATH, dataset)
     with open(_SCORE_FILE % solution, 'w') as stream:
         stream.write(score)
-    score = get_score(dataset, solution)
+    score = get_score_from_file(dataset, solution)
     if score > _get_challenger(directory):
         _set_challenger(directory, score)
-        _send_notification(dataset, score)
-        with JudgeSite(configuration.ROUND) as judge:
-            judge.login(
-                configuration.GOOGLE_USERNAME,
-                configuration.GOOGLE_PASSWORD)
-            judge.upload(dataset, join(getcwd(), solution))
+    _send_notification(dataset, score)
+    with JudgeSite(configuration.ROUND) as judge:
+        judge.login(
+            configuration.GOOGLE_USERNAME,
+            configuration.GOOGLE_PASSWORD)
+        judge.upload(dataset, join(getcwd(), solution))

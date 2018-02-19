@@ -24,12 +24,12 @@ stdout.write('BLABLA')          # FASTER THAN PRINT !
 
 from sys import stdout
 
-from utils.dataset import DatasetReader
+from utils.dataset import load_dataset
 
 
 def main():
-    reader = DatasetReader()
-    # TODO : Read input, solve problem, write to stdout.
+    dataset = load_dataset()
+    # TODO : solve problem, write to stdout.
 
 
 if __name__ == '__main__':
