@@ -9,6 +9,7 @@ from pytest import fixture
 from requests import codes
 from threading import Thread
 
+__author__ = 'fv'
 
 environ['GOOGLE_USERNAME'] = 'foo@gmail.com'
 environ['GOOGLE_PASSWORD'] = 'bar'

@@ -6,6 +6,8 @@
 from utils.slack import notify
 from json import loads
 
+__author__ = 'fv'
+
 
 def test_notify(slack_holder):
     """ Test notification function. """

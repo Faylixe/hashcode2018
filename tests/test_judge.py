@@ -3,6 +3,8 @@
 
 """ """
 
+__author__ = 'fv'
+
 
 def test_build_filelist():
     """ """
@@ -17,4 +19,3 @@ def test_build_archive_filelist():
 def test_create_source_archive():
     """ """
     pass
-

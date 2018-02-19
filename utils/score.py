@@ -3,6 +3,8 @@
 
 """ Solution scoring functions. """
 
+__author__ = 'fv'
+
 
 def get_score(dataset, solution):
     """ Computes the expeceted score for the given

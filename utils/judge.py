@@ -12,6 +12,8 @@ from zipfile import ZipFile, ZIP_DEFLATED
 
 from utils.configuration import configuration
 
+__author__ = 'fv'
+
 _ARCHIVE_FILE = '/tmp/source-%s-%s.zip'
 _ROOT_FILES = ['requirements.txt', 'run.sh']
 _UTILS = 'utils'

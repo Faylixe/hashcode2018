@@ -5,6 +5,8 @@
 
 from utils.configuration import configuration
 
+__author__ = 'fv'
+
 
 def test_configuration():
     """ Test configuration attribute. """

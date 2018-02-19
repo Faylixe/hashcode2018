@@ -13,6 +13,8 @@ from utils.judge import JudgeSite
 from utils.score import get_score
 from utils.slack import notify
 
+__author__ = 'fv'
+
 _DATASET_PATH = 'dataset'
 _CHALLENGER_PATH = 'challenger.score'
 _SCORE_FILE = '%s.score'

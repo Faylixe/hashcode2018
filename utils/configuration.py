@@ -5,6 +5,8 @@
 
 from os import getenv
 
+__author__ = 'fv'
+
 
 class _Configuration(object):
     """ Configuration parameter namespace."""

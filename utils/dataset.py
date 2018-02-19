@@ -5,6 +5,8 @@
 
 from sys import stdin
 
+__author__ = 'fv'
+
 
 class DatasetReader(object):
     """ Utility class for fast input reading. """
