@@ -37,39 +37,70 @@ echo "export GOOGLE_PASSWORD='$password'" >> venv/bin/activate
 echo "export ROUND='$round'" >> venv/bin/activate
 echo "export WORKSPACE='$workspace'" >> venv/bin/activate
 echo >>venv/bin/activate <<EOL
-get_solution_path() {
-    local directory="solution/$dataset"
+_get_solution_path() {
+    local directory="solution/$2"
     mkdir -p $directory
+    local script=$1
     local signature="${script//./_}"
     local result="$directory/$WORKSPACE-$signature-$(ls $directory | wc -l).out"
     echo "$result"
 }
-run() {
-    script=$1
-    if [ ! -f $WORKSPACE/$script ]
+
+_commit() {
+    git add -A
+    git commit -m "[RUN] $WORKSPACE/$1 $2"
+    git push
+}
+
+_exec() {
+    git pull
+    output=${3:-/dev/stdout}
+    cat dataset/$2 | python workspace/$WORKSPACE/$1 > $output
+    if [ $? -eq 0 ]
     then
-        echo "Unknown script $WORKSPACE/$script. Abort."
-    else
-        dataset=$2
-        if [ ! -f $WORKSPACE/$script ]
+        python utils/eval_solution.py $2 $output
+        if [ $? -eq 0 ]
         then
-            echo "Unknown dataset $dataset. Abort."
-        else
-            git pull
-            output=$(get_solution_path $dataset $script)
-            cat dataset/$dataset | python workspace/$WORKSPACE/$script > $output
-            if [ $? -eq 0 ]
-            then
-                python utils/eval_solution.py $dataset $output
-                if [ $? -eq 0 ]
-                then
-                    git add -A
-                    git commit -m "[RUN] $WORKSPACE/$script $dataset"
-                    git push
-                fi
-            fi
+            _commit $1 $2
         fi
     fi
+}
+
+_verify_args() {
+    if [ $# -ne 2 ]
+    then
+        echo "Please provide script and dataset paramters"
+        return 1
+    script=$1
+    if [ ! -f $WORKSPACE/$1 ]
+    then
+        echo "Unknown script $WORKSPACE/$1. Abort."
+        return 1
+    fi
+    if [ ! -f dataset/$2 ]
+    then
+        echo "Unknown dataset dataset/$2. Abort."
+        return 1
+    fi
+}
+
+test() {
+    _verify_args "$@"
+    if [ $? -ne 0 ]
+    then
+        return 1
+    fi
+    _exec "$@"
+}
+
+run() {
+    _verify_args "$@"
+    if [ $? -ne 0 ]
+    then
+        return 1
+    fi
+    output=$(get_solution_path "$@")
+    _exec "$@" $output
 }
 EOL
 source venv/bin/activate
