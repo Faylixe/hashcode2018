@@ -9,15 +9,12 @@ environment using ``init.sh`` script :
 
 ```bash
 git clone https://github.com/Faylixe/hashcode2018
-bash init.sh
+bash init.sh workspace_name
 ```
 
-It will prompt for your google account credential which will be used for automatic submission,
-and for target round identifier, which can be found in the round URL as following :
+It will prompt for your google account credential which will be used for automatic submission.
 
-![round](https://github.com/Faylixe/hashcode2018/blob/master/docs/round.png)
-
-Dataset files will be downloaded automatically for the given round, and written into the ``dataset`` folder.
+The **workspace_name** parameter should be your initial.
 
 ## Usage
 
@@ -27,3 +24,10 @@ have required python dependencies and the ``run`` command.
 ```bash
 run greedy.py small
 ```
+
+It will run the script ``greedy.py`` located in your workspace (under ``workspace/your_initial``directory),
+using small dataset.
+
+The run command ensure the repository is up to date by performing a ``git pull`` command, then run your script
+managing automatically solution storage and managment, computing score and uploading code and solution file
+to the judge platform automatically.
