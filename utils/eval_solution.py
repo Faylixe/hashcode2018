@@ -1,36 +1,29 @@
 #!/usr/bin/env python
 # coding: utf8
 
-""" Solution evaluation and managment module. """
+"""
+    Solution evaluation and managment module.
+    
+    Writes a score file for the given dataset.
+    If the score
+
+    :param dataset: Dataset to write solution for.
+    :param writer: Solution monadic writing function that takes a stream.
+    :param signature: (Optional) Algorithm signature to label file with.
+"""
 
 from getpass import getuser
-from os import getcwd, listdir, makedirs
-from os.path import exists, isfile, join
+from os import getcwd
+from os.path import exists, join
 
 from utils.configuration import configuration
 from utils.judge import JudgeSite
 from utils.score import get_score
 from utils.slack import notify
 
-_SOLUTION_DIRECTORY = 'solution'
 _CHALLENGER_PATH = 'challenger.score'
-_SOLUTION_FILE = '%s-%s-%s.out'
 _SCORE_FILE = '%s.score'
 _MIN_SCORE = 0
-
-
-def _get_solution_directory(dataset):
-    """ Retrieves a solution directory for the given
-    dataset. If such directory does not exist it will be
-    then created.
-
-    :param dataset: Dataset to get solution directory for.
-    :returns: Solution directory for the given dataset.
-    """
-    path = join(_SOLUTION_DIRECTORY, dataset)
-    if not exists(path):
-        makedirs(path)
-    return path
 
 
 def _get_challenger(directory):
@@ -74,25 +67,14 @@ def _send_notification(dataset, score, target):
     notify(message, user=user)
 
 
-def write_solution(dataset, writer, signature='anonymous'):
-    """ Writes a solution file for the given dataset
-    using the given writer function. Such function only
-    takes in parameter a writing stream where solution
-    should be written in.
-
-    :param dataset: Dataset to write solution for.
-    :param writer: Solution monadic writing function that takes a stream.
-    :param signature: (Optional) Algorithm signature to label file with.
-    """
-    directory = _get_solution_directory(dataset)
-    n = len(filter(isfile, listdir(directory)))
-    name = _SOLUTION_FILE % (dataset, n, signature)
-    target = join(directory, name)
-    with open(target, 'w') as stream:
-        writer(stream)
-    with open(_SCORE_FILE % target, 'w') as stream:
+if __name__ == '__main__':
+    dataset = argv[0]
+    solution = argv[1]
+    # TODO : Get directory from solution file.
+    # TODO : Check args.
+    with open(_SCORE_FILE % solution, 'w') as stream:
         stream.write(score)
-    score = get_score(dataset, target)
+    score = get_score(dataset, solution)
     if score > _get_challenger(directory):
         _set_challenger(directory, score)
         _send_notification(dataset, score)
@@ -100,4 +82,4 @@ def write_solution(dataset, writer, signature='anonymous'):
             judge.login(
                 configuration.GOOGLE_USERNAME,
                 configuration.GOOGLE_PASSWORD)
-            judge.upload(dataset, join(getcwd, target))
+            judge.upload(dataset, join(getcwd(), solution))
