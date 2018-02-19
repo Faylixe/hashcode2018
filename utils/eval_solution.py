@@ -47,7 +47,7 @@ def _set_challenger_score(directory, score):
 
 
 def _send_notification(dataset, score, target):
-    """ Post a notification of new best score.
+    """ Post a notification of new solution file.
 
     :param dataset: Dataset new challenger arrived for.
     :param score: Associated score.
@@ -72,6 +72,7 @@ if __name__ == '__main__':
     score = get_score_from_file(dataset, solution)
     if score > _get_challenger(directory):
         _set_challenger(directory, score)
+        # TODO : Write current challenger script into compilation file
     _send_notification(dataset, score)
     with JudgeSite(configuration.ROUND) as judge:
         judge.login(
