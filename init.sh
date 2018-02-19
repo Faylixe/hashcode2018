@@ -49,9 +49,12 @@ run() {
             if [ $? -eq 0 ]
             then
                 python utils/eval_solution.py $dataset $output
-                git add -A
-                git commit -m "[RUN] $WORKSPACE/$script $dataset"
-                git push
+                if [ $? -eq 0 ]
+                then
+                    git add -A
+                    git commit -m "[RUN] $WORKSPACE/$script $dataset"
+                    git push
+                fi
             fi
         fi
     fi

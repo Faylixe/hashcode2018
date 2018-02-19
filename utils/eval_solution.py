@@ -3,7 +3,7 @@
 
 """
     Solution evaluation and managment module.
-    
+
     Writes a score file for the given dataset.
     If the score
 
@@ -14,13 +14,15 @@
 
 from getpass import getuser
 from os import getcwd
-from os.path import exists, join
+from os.path import dirname, exists, join
+from sys import argv
 
 from utils.configuration import configuration
 from utils.judge import JudgeSite
 from utils.score import get_score
 from utils.slack import notify
 
+_DATASET_PATH = 'dataset'
 _CHALLENGER_PATH = 'challenger.score'
 _SCORE_FILE = '%s.score'
 _MIN_SCORE = 0
@@ -70,8 +72,7 @@ def _send_notification(dataset, score, target):
 if __name__ == '__main__':
     dataset = argv[0]
     solution = argv[1]
-    # TODO : Get directory from solution file.
-    # TODO : Check args.
+    directory = join(_DATASET_PATH, dataset)
     with open(_SCORE_FILE % solution, 'w') as stream:
         stream.write(score)
     score = get_score(dataset, solution)
