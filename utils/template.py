@@ -3,6 +3,8 @@
 
 """ TODO : Document. """
 
+from sys import stdout
+
 from utils.dataset import DatasetReader
 
 
@@ -19,6 +21,9 @@ def main():
     # returned as a list of char, not string
     r = reader.next_row()
     r[0] = 'X'
+    # FASTER THAN PRINT !
+    stdout.write('BLABLA')
+
 
 if __name__ == '__main__':
     main()
