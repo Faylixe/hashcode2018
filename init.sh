@@ -1,7 +1,11 @@
 #!/bin/bash
 
-# Configure virtualenv.
-virtualenv venv
+if [ $# -eq 0 ]
+then
+    echo 'Workspace name not provided'
+    echo 'Usage : bash init.sh workspace_name'
+    exit -1
+fi
 
 # Get google account credentials. 
 echo 'Please enter your google account credentials :'
@@ -9,28 +13,30 @@ echo -n 'Email: '
 read username
 echo -n 'Password: '
 read -s password
-echo 'Please enter target HashCode round identifier :'
-echo -n 'Round: '
-read round
 
-#read workspace
+# TODO : Add round id here.
+round=''
+# echo 'Please enter target HashCode round identifier :'
+# echo -n 'Round: '
+# read round
 
-mkdir -p workspace/$WORKSPACE
-if [ ! -f workspace/$WORKSPACE/__init__.py ]
+# Configure workspace.
+workspace=$1
+mkdir -p workspace/$workspace
+if [ ! -f workspace/$workspace/__init__.py ]
 then
-    touch workspace/$WORKSPACE/__init__.py
-    cp utils/template.py workspace/$WORKSPACE/
+    touch workspace/$workspace/__init__.py
+    cp utils/template.py workspace/$workspace/
 fi
 
-# Export required environment variable.
+# Configure virtualenv.
+virtualenv venv
 echo "export SLACK_WEBHOOK='https://hooks.slack.com/services/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'" >> venv/bin/activate
-echo "export GOOGLE_USERNAME=$username" >> venv/bin/activate
-echo "export GOOGLE_PASSWORD=$password" >> venv/bin/activate
-echo "export ROUND=$round" >> venv/bin/activate
-echo "export WORKSPACE=''" >> venv/bin/activate
-
+echo "export GOOGLE_USERNAME='$username'" >> venv/bin/activate
+echo "export GOOGLE_PASSWORD='$password'" >> venv/bin/activate
+echo "export ROUND='$round'" >> venv/bin/activate
+echo "export WORKSPACE='$workspace'" >> venv/bin/activate
 echo >>venv/bin/activate <<EOL
-
 get_solution_path() {
     local directory="solution/$dataset"
     mkdir -p $directory
@@ -38,7 +44,6 @@ get_solution_path() {
     local result="$directory/$WORKSPACE-$signature-$(ls $directory | wc -l).out"
     echo "$result"
 }
-
 run() {
     script=$1
     if [ ! -f $WORKSPACE/$script ]
@@ -67,6 +72,5 @@ run() {
     fi
 }
 EOL
-
 source venv/bin/activate
 pip install -r requirements.txt
