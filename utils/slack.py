@@ -3,8 +3,9 @@
 
 """ This modules exposes tools for logging into Slack. """
 
-from configuration import configuration
 from requests import post
+
+from utils.configuration import configuration
 
 _ICON = 'https://s3-us-west-2.amazonaws.com/slack-files2/avatars/2018-02-13/313621315392_9b0b9b611d28e342530a_132.png'
 _USER = 'Kware Judge'

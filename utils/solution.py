@@ -4,9 +4,11 @@
 """ Solution evaluation and managment module. """
 
 from getpass import getuser
-from os import listdir, makedirs
+from os import getcwd, listdir, makedirs
 from os.path import exists, isfile, join
 
+from utils.configuration import configuration
+from utils.judge import JudgeSite
 from utils.score import get_score
 from utils.slack import notify
 
@@ -94,3 +96,8 @@ def write_solution(dataset, writer, signature='anonymous'):
     if score > _get_challenger(directory):
         _set_challenger(directory, score)
         _send_notification(dataset, score)
+        with JudgeSite(configuration.ROUND) as judge:
+            judge.login(
+                configuration.GOOGLE_USERNAME,
+                configuration.GOOGLE_PASSWORD)
+            judge.upload(dataset, join(getcwd, target))

@@ -4,13 +4,13 @@
 """ Toolkit for automatic submission to judge platform. """
 
 from os import listdir
-from os.path import join, isfile
+from os.path import join, isdirectory, isfile
 from pickle import load
 from requests import Session
 from uuid import uuid4 as uuid
 from zipfile import ZipFile, ZIP_DEFLATED
 
-from cookie import COOKIE_FILE
+from utils.configuration import configuration
 
 _ARCHIVE_FILE = '/tmp/source-%s-%s.zip'
 _ROOT_FILES = ['requirements.txt', 'run.sh']
@@ -31,34 +31,44 @@ def _build_filelist(directory):
     )
 
 
-def _build_archive_filelist(workspace):
+def _build_archive_filelist():
     """ Builds a list of file that aims to be
     archive for a source code submission.
 
-    :param workspace: Target workspace to build source archive for.
     :returns: List of file to archive.
     """
     files = ['requirements.txt', 'run.sh']
     map(files.append, _build_filelist(_UTILS))
-    map(files.append, _build_filelist(join(_WORKSPACE, workspace)))
+    for workspace in filter(isdirectory, listdir(_WORKSPACE)):
+        map(files.append, _build_filelist(join(_WORKSPACE, workspace)))
     return files
 
 
-def _create_source_archive(workspace):
+def _create_source_archive():
     """ Creates source code archive for the given workspace.
 
-    :param workspace: Workspace to create archive for.
     :returns: The path of the temporary archive file created.
     """
     suffix = uuid()
     path = _ARCHIVE_FILE % (workspace, suffix)
     with ZipFile(path, 'w', ZIP_DEFLATED) as archive:
-        map(archive.write, _build_archive_filelist(workspace))
+        map(archive.write, _build_archive_filelist())
     return path
 
 
+def _create_driver():
+    """ Selenium webdriver factory function.
+
+    :returns: A webdriver instance according to the internal configuration.
+    """
+    if configuration.SELENIUM_DRIVER == 'phantomjs':
+        # TODO : Switch to phantomjs
+        return webdriver.Firefox()
+    return webdriver.Firefox()
+
+
 class JudgeSite(object):
-    """ """
+    """ Class for uploading submission to the judge platform. """
 
     MYACCOUNT = 'https://myaccount.google.com'
     LOGIN = 'https://accounts.google.com/signin/v2/sl/pwd'
@@ -74,7 +84,15 @@ class JudgeSite(object):
         :param round: Target contest round.
         """
         self._url = SUBMISSION % round
-        self._driver = None
+        self._driver = _create_driver()
+
+    def __enter__(self):
+        """ Context manager initializer. """
+        return self
+
+    def __exit__(self, type, value, traceback):
+        """ Context manager exit method. """
+        self._driver.close()
 
     def _get(self, by, value):
         """ Suger method for element access using driver wait.
@@ -106,17 +124,17 @@ class JudgeSite(object):
         wait = WebDriverWait(self._driver, 1000)
         wait.until(lambda d: d.current_url.startswith(_MYACCOUNT_URL))
 
-    def upload(self, dataset, solution, workspace):
+    def upload(self, dataset, solution):
         """
         :param dataset:
         :param solution:
         :param workspace:
         """
-        # Navigate to submission panel.
+        # Navigate to submission panel.
         self._driver.get(self._url)
         self._get(By.XPATH, SUBMISSION_XPATH).click()
         # Source code upload.
-        archive = _create_source_archive(workspace)
+        archive = _create_source_archive()
         self._get(By.ID, 'input_1').send_keys(archive)
         # Solution upload.
         self._get(By.ID, 'input_%s' % target).send_keys(solution) # TODO : Check for path.
