@@ -4,7 +4,7 @@
 """ Toolkit for automatic submission to judge platform. """
 
 from os import listdir
-from os.path import join, isdir, isfile
+from os.path import join, isdir, isfile, abspath
 from pickle import load
 from requests import Session
 from selenium import webdriver
@@ -74,22 +74,33 @@ def _create_driver():
     return webdriver.Firefox()
 
 
+_MYACCOUNT = 'https://myaccount.google.com'
+_LOGIN = 'https://accounts.google.com/signin/v2/sl/pwd'
+_SITE = 'https://hashcodejudge.withgoogle.com'
+_SUBMISSION = _SITE + '/#/rounds/%s/submissions/'
+_SOURCE_XPATH = '//*[@id="dialogContent_6"]/div/div/judge-upload/div/md-input-container/div[2]/div/button'
+_SUBMISSION_XPATH = '/html/body/div/div/div/md-content/div[1]/md-card/md-card-header/div/button'
+_SUBMIT_XPATH = '//*[@id="createSubmissionDialog"]/md-dialog/md-dialog-actions/button[2]'
+# Magic command. Finding it make me sweat :D
+_TRIGGER_EVENT = '$c(angular.element(document.getElementById("%s")).scope().ctrl, document.getElementById("%s").files)'
+
+# NOTE : The dataset mapping should be updated at begining of the round.
+_DATASETS = {
+    'example': 2,
+    'small': 3,
+    'medium': 4,
+    'big': 5
+}
+
 class JudgeSite(object):
     """ Class for uploading submission to the judge platform. """
-
-    MYACCOUNT = 'https://myaccount.google.com'
-    LOGIN = 'https://accounts.google.com/signin/v2/sl/pwd'
-    SITE = 'https://hashcodejudge.withgoogle.com'
-    SUBMISSION = SITE + '/#/rounds/%s/submissions/'
-    SOURCE_XPATH = '//*[@id="dialogContent_6"]/div/div/judge-upload/div/md-input-container/div[2]/div/button'
-    SUBMISSION_XPATH = '/html/body/div/div/div/md-content/div[1]/md-card/md-card-header/div/button'
 
     def __init__(self, round):
         """ Default constructor.
 
         :param round: Target contest round.
         """
-        self._url = JudgeSite.SUBMISSION % round
+        self._url = _SUBMISSION % round
         self._driver = _create_driver()
 
     def __enter__(self):
@@ -118,7 +129,7 @@ class JudgeSite(object):
         :param username: Google account username (email).
         :param password: Google account password.
         """
-        self._driver.get(JudgeSite.LOGIN)
+        self._driver.get(_LOGIN)
         username_holder = self._get((By.ID, 'identifierId'))
         username_holder.clear()
         username_holder.send_keys(username)
@@ -128,7 +139,7 @@ class JudgeSite(object):
         password_holder.send_keys(password)
         self._click((By.ID, 'passwordNext'))
         wait = WebDriverWait(self._driver, 10)
-        wait.until(lambda d: d.current_url.startswith(JudgeSite.MYACCOUNT))
+        wait.until(lambda d: d.current_url.startswith(_MYACCOUNT))
 
     def upload(self, dataset, solution):
         """
@@ -138,10 +149,19 @@ class JudgeSite(object):
         """
         # Navigate to submission panel.
         self._driver.get(self._url)
-        self._get(By.XPATH, JudgeSite.SUBMISSION_XPATH).click()
+        self._click((By.XPATH, _SUBMISSION_XPATH))
         # Source code upload.
         archive = _create_source_archive()
-        self._get(By.ID, 'input_1').send_keys(archive)
+        source_holder = self._driver.find_element_by_id('input_1')
+        source_holder.clear()
+        source_holder.send_keys(archive)
+        self._driver.execute_script(_TRIGGER_EVENT % ('input_1', 'input_1'))
         # Solution upload.
-        self._get(By.ID, 'input_%s' % target).send_keys(solution) # TODO : Check for path.
+        path = abspath(solution)
+        identifier = 'input_%d' % _DATASETS[dataset]
+        solution_holder = self._driver.find_element_by_id(identifier)
+        solution_holder.clear()
+        solution_holder.send_keys(path)
+        self._driver.execute_script(_TRIGGER_EVENT % (identifier, identifier))
         # Submit.
+        self._click((By.XPATH, _SUBMIT_XPATH))

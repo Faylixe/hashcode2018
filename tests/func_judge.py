@@ -14,10 +14,19 @@ from utils.judge import JudgeSite
 
 def test_login():
     """ Test authentification. """
+    round = '5736842779426816'
     email = 'felix.voituret@gmail.com'
     password = getpass()
-    with JudgeSite('1') as judge:
+    with open('/tmp/exemple.out', 'w') as stream:
+        stream.write('1\n0 0 1 1')
+    with JudgeSite(round) as judge:
         judge.login(email, password)
+        try:
+            judge.upload('small', '/tmp/exemple.out')
+        except:
+            pass
+        import time
+        time.sleep(10000)
 
 
 if __name__ == '__main__':
