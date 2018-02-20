@@ -8,7 +8,7 @@ then
 fi
 
 # Get google account credentials. 
-echo 'Please enter your google account credentials :'
+echo 'Please enter your google account credentials'
 echo -n 'Email: '
 read username
 echo -n 'Password: '
@@ -16,9 +16,6 @@ read -s password
 
 # TODO : Add round id here.
 round=''
-# echo 'Please enter target HashCode round identifier :'
-# echo -n 'Round: '
-# read round
 
 # Configure workspace.
 workspace=$1
@@ -39,8 +36,8 @@ echo "export ROUND='$round'" >> venv/bin/activate
 echo "export DATASET_PATH='dataset'" >> venv/bin/activate
 echo "export SOLUTION_PATH='solution'" >> venv/bin/activate
 echo "export WORKSPACE='$workspace'" >> venv/bin/activate
-echo >>venv/bin/activate <<EOL
-_get_solution_path() {
+cat >>venv/bin/activate <<'EOL'
+_get_solution_path() {
     local directory="$SOLUTION_PATH/$2"
     mkdir -p $directory
     local script=$1
@@ -78,10 +75,11 @@ _verify_args() {
     then
         echo "Please provide script and dataset paramters"
         return 1
+    fi
     script=$1
-    if [ ! -f $WORKSPACE/$1 ]
+    if [ ! -f workspace/$WORKSPACE/$1 ]
     then
-        echo "Unknown script $WORKSPACE/$1. Abort."
+        echo "Unknown script workspace/$WORKSPACE/$1. Abort."
         return 1
     fi
     if [ ! -f dataset/$2 ]
@@ -106,7 +104,7 @@ run() {
     then
         return 1
     fi
-    output=$(get_solution_path "$@")
+    output=$(_get_solution_path "$@")
     _exec "$@" $output
 }
 EOL
