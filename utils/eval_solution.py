@@ -6,6 +6,7 @@
 from getpass import getuser
 from os import makedirs
 from os.path import dirname, exists, join
+from shutil import copyfile
 from sys import argv
 
 from utils.configuration import configuration
@@ -83,7 +84,7 @@ def evaluate(
     directory = join(configuration.SOLUTION_PATH, dataset)
     if score > _get_challenger_score(directory):
         _set_challenger_score(directory, score)
-        # TODO : Write current challenger script into compilation file
+        copyfile(solution, join(directory, _CHALLENGER_SOLUTION_FILE))
     _send_notification(dataset, score, solution)
     with judge_factory(configuration.ROUND) as judge:
         judge.login(
@@ -96,5 +97,9 @@ def evaluate(
 if __name__ == '__main__':
     dataset = argv[0]
     solution = argv[1]
-    # TODO : Control argv.
+    if not exists(join(configuration.DATASET_PATH, dataset)):
+        raise IOError('Dataset %s not found')
+    # TODO : Check solution path or solution name (dataset relative)
+    if not exists(solution):
+        raise IOError('Solution file not found')
     evaluate(dataset, solution, JudgeSite)

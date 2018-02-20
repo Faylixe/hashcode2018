@@ -96,8 +96,10 @@ def test_evaluate(slack_holder):
         _verify_payload(slack_holder.payload, expected)
         assert exists(solution.name + '.score')
         assert exists('/tmp/test/challenger.score')
+        assert exists('/tmp/test/challenger.solution')
         with open(solution.name + '.score', 'r') as stream:
             assert int(stream.read()) == 1
         with open('/tmp/test/challenger.score') as stream:
             assert int(stream.read()) == 1
         remove('/tmp/test/challenger.score')
+        remove('/tmp/test/challenger.solution')

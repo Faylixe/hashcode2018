@@ -14,10 +14,7 @@ from utils.configuration import configuration
 
 __author__ = 'fv'
 
-_ARCHIVE_FILE = '/tmp/source-%s-%s.zip'
-_ROOT_FILES = ['requirements.txt', 'run.sh']
-_UTILS = 'utils'
-_WORKSPACE = 'workspace'
+_ARCHIVE_FILE = '/tmp/source-%s.zip'
 
 
 def _build_filelist(directory):
@@ -27,9 +24,9 @@ def _build_filelist(directory):
     :param directory:  Directory to build file list from.
     :returns: List of file found in the given directory, with full path.
     """
-    return map(
+    return filter(isfile, map(
         lambda f: join(directory, f),
-        filter(isfile, listdir(directory))
+        listdir(directory))
     )
 
 
@@ -39,10 +36,13 @@ def _build_archive_filelist():
 
     :returns: List of file to archive.
     """
-    files = ['requirements.txt', 'run.sh']
-    map(files.append, _build_filelist(_UTILS))
-    for workspace in filter(isdir, listdir(_WORKSPACE)):
-        map(files.append, _build_filelist(join(_WORKSPACE, workspace)))
+    files = ['requirements.txt', 'init.sh']
+    for package in ('tests', 'utils', 'workspace'):
+        for module in _build_filelist(package):
+            files.append(module)
+    for workspace in filter(isdir, listdir('workspace')):
+        for module in _build_filelist(join('workspace', workspace)):
+            files.append(module)
     return files
 
 
@@ -52,9 +52,10 @@ def _create_source_archive():
     :returns: The path of the temporary archive file created.
     """
     suffix = uuid()
-    path = _ARCHIVE_FILE % (workspace, suffix)
+    path = _ARCHIVE_FILE % suffix
     with ZipFile(path, 'w', ZIP_DEFLATED) as archive:
-        map(archive.write, _build_archive_filelist())
+        for source in _build_archive_filelist():
+            archive.write(source)
     return path
 
 

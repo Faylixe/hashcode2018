@@ -36,10 +36,12 @@ echo "export SLACK_WEBHOOK='https://hooks.slack.com/services/T9B9N43TR/B9A830SJW
 echo "export GOOGLE_USERNAME='$username'" >> venv/bin/activate
 echo "export GOOGLE_PASSWORD='$password'" >> venv/bin/activate
 echo "export ROUND='$round'" >> venv/bin/activate
+echo "export DATASET_PATH='dataset'" >> venv/bin/activate
+echo "export SOLUTION_PATH='solution'" >> venv/bin/activate
 echo "export WORKSPACE='$workspace'" >> venv/bin/activate
 echo >>venv/bin/activate <<EOL
 _get_solution_path() {
-    local directory="solution/$2"
+    local directory="$SOLUTION_PATH/$2"
     mkdir -p $directory
     local script=$1
     local signature="${script//./_}"
