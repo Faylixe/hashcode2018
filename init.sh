@@ -14,8 +14,7 @@ read username
 echo -n 'Password: '
 read -s password
 
-# TODO : Add round id here.
-round=''
+round='5736842779426816'
 
 # Configure workspace.
 workspace=$1
