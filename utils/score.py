@@ -16,7 +16,11 @@ def load_solution_from_file(path):
     """
     with open(path, 'r') as stream:
         reader = DatasetReader(stream)
-        raise NotImplementedError()
+        n = reader.next_int()
+        slices = []
+        for i in range(n):
+            slices.append(reader.next_ints())
+        return n, slices
 
 
 def get_score_from_file(dataset_path, solution_path):
@@ -40,4 +44,11 @@ def get_score(dataset, solution):
     :param path: Solution to get score for.
     :returns: Score of the given solution.
     """
-    raise NotImplementedError()
+    n, slices = solution
+    score = 0
+    for pslice in slices:
+        r1, c1, r2, c2 = pslice
+        w = (r2 - r1) + 1
+        h = (c2 - c1) + 1
+        score += (w * h)
+    return score
