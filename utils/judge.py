@@ -7,6 +7,10 @@ from os import listdir
 from os.path import join, isdir, isfile
 from pickle import load
 from requests import Session
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from uuid import uuid4 as uuid
 from zipfile import ZipFile, ZIP_DEFLATED
 
@@ -77,7 +81,6 @@ class JudgeSite(object):
     LOGIN = 'https://accounts.google.com/signin/v2/sl/pwd'
     SITE = 'https://hashcodejudge.withgoogle.com'
     SUBMISSION = SITE + '/#/rounds/%s/submissions/'
-    NEXT_XPATH = '/html/body/div[1]/div[1]/div[2]/div[2]/%s/div[2]/div/div[2]/div[1]/div/content/span'
     SOURCE_XPATH = '//*[@id="dialogContent_6"]/div/div/judge-upload/div/md-input-container/div[2]/div/button'
     SUBMISSION_XPATH = '/html/body/div/div/div/md-content/div[1]/md-card/md-card-header/div/button'
 
@@ -86,7 +89,7 @@ class JudgeSite(object):
 
         :param round: Target contest round.
         """
-        self._url = SUBMISSION % round
+        self._url = JudgeSite.SUBMISSION % round
         self._driver = _create_driver()
 
     def __enter__(self):
@@ -97,17 +100,17 @@ class JudgeSite(object):
         """ Context manager exit method. """
         self._driver.close()
 
-    def _get(self, by, value):
-        """ Suger method for element access using driver wait.
-
-        :param by: Selenium by to build locator.
-        :param value: Value of the expected By.
-        :returns: Located element if any.
-        """
-        wait = WebDriverWait(self._driver, 1000)
-        locator = (by, id)
-        condition = EC.presence_of_element_located(locator)
+    def _get(self, locator):
+        """ Suger method for element access using driver wait. """
+        wait = WebDriverWait(self._driver, 10)
+        condition = EC.visibility_of_element_located(locator)
         return wait.until(condition)
+    
+    def _click(self, locator):
+        """ Suger method for element clicking using driver wait. """
+        wait = WebDriverWait(self._driver, 10)
+        condition = EC.element_to_be_clickable(locator)
+        wait.until(condition).click()
 
     def login(self, username, password):
         """ Performs login into Google Services.
@@ -115,17 +118,17 @@ class JudgeSite(object):
         :param username: Google account username (email).
         :param password: Google account password.
         """
-        self._driver.get(_LOGIN_URL)
-        username_holder = self._get(By.ID, 'identifierId')
+        self._driver.get(JudgeSite.LOGIN)
+        username_holder = self._get((By.ID, 'identifierId'))
         username_holder.clear()
         username_holder.send_keys(username)
-        self._get(By.XPATH, NEXT_XPATH % 'form').click()
-        password_holder = self._get(By.NAME, 'password')
+        self._click((By.ID, 'identifierNext'))
+        password_holder = self._get((By.NAME, 'password'))
         password_holder.clear()
         password_holder.send_keys(password)
-        self._get(By.XPATH, NEXT_XPATH % 'div').click()
-        wait = WebDriverWait(self._driver, 1000)
-        wait.until(lambda d: d.current_url.startswith(_MYACCOUNT_URL))
+        self._click((By.ID, 'passwordNext'))
+        wait = WebDriverWait(self._driver, 10)
+        wait.until(lambda d: d.current_url.startswith(JudgeSite.MYACCOUNT))
 
     def upload(self, dataset, solution):
         """
@@ -135,7 +138,7 @@ class JudgeSite(object):
         """
         # Navigate to submission panel.
         self._driver.get(self._url)
-        self._get(By.XPATH, SUBMISSION_XPATH).click()
+        self._get(By.XPATH, JudgeSite.SUBMISSION_XPATH).click()
         # Source code upload.
         archive = _create_source_archive()
         self._get(By.ID, 'input_1').send_keys(archive)
