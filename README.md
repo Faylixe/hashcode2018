@@ -10,6 +10,7 @@ environment using ``init.sh`` script :
 ```bash
 git clone https://github.com/Faylixe/hashcode2018
 bash init.sh workspace_name
+source venv/bin/activate
 ```
 
 It will prompt for your google account credential which will be used for automatic submission.
