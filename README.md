@@ -19,14 +19,21 @@ The **workspace_name** parameter should be your initial.
 ## Usage
 
 The initialization script will configure required environment variable and a ``virtualenv`` which
-have required python dependencies and the ``run`` command.
+have required python dependencies and the ``test`` command.
 
 ```bash
-run greedy.py small
+test greedy small
 ```
 
 It will run the script ``greedy.py`` located in your workspace (under ``workspace/your_initial``directory),
 using small dataset.
+
+The test conmmand does not write result into a file, but if everything goes well, you can use the ``run``
+command :
+
+```bash
+run greedy small
+```
 
 The run command ensure the repository is up to date by performing a ``git pull`` command, then run your script
 managing automatically solution storage and managment, computing score and uploading code and solution file
