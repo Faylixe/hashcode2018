@@ -11,7 +11,7 @@ __author__ = 'fv'
 class _Configuration(object):
     """ Configuration parameter namespace."""
 
-    SELENIUM_DRIVER = getenv('SELENIUM_DRIVER', 'phantomjs')
+    SELENIUM_DRIVER = getenv('SELENIUM_DRIVER', 'silent')
     SLACK_WEBHOOK = getenv('SLACK_WEBHOOK')
     GOOGLE_USERNAME = getenv('GOOGLE_USERNAME')
     GOOGLE_PASSWORD = getenv('GOOGLE_PASSWORD')

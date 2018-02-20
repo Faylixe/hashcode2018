@@ -9,6 +9,7 @@ from pickle import load
 from requests import Session
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from uuid import uuid4 as uuid
@@ -68,10 +69,10 @@ def _create_driver():
 
     :returns: A webdriver instance according to the internal configuration.
     """
-    if configuration.SELENIUM_DRIVER == 'phantomjs':
-        # TODO : Switch to phantomjs
-        return webdriver.Firefox()
-    return webdriver.Firefox()
+    options = Options()
+    if configuration.SELENIUM_DRIVER == 'silent':
+        options.add_argument('--headless')
+    return webdriver.Firefox(firefox_options=options)
 
 
 _MYACCOUNT = 'https://myaccount.google.com'
@@ -81,7 +82,8 @@ _SUBMISSION = _SITE + '/#/rounds/%s/submissions/'
 _SOURCE_XPATH = '//*[@id="dialogContent_6"]/div/div/judge-upload/div/md-input-container/div[2]/div/button'
 _SUBMISSION_XPATH = '/html/body/div/div/div/md-content/div[1]/md-card/md-card-header/div/button'
 _SUBMIT_XPATH = '//*[@id="createSubmissionDialog"]/md-dialog/md-dialog-actions/button[2]'
-# Magic command. Finding it make me sweat :D
+
+# Magic command. People died for this.
 _TRIGGER_EVENT = '$c(angular.element(document.getElementById("%s")).scope().ctrl, document.getElementById("%s").files)'
 
 # NOTE : The dataset mapping should be updated at begining of the round.

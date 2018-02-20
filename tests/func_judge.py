@@ -5,7 +5,7 @@
 
 # Force Firefox usage.
 from os import environ
-environ['SELENIUM_DRIVER'] = 'firefox'
+#environ['SELENIUM_DRIVER'] = 'firefox'
 
 from getpass import getpass
 
@@ -21,10 +21,7 @@ def test_login():
         stream.write('1\n0 0 1 1')
     with JudgeSite(round) as judge:
         judge.login(email, password)
-        try:
-            judge.upload('small', '/tmp/exemple.out')
-        except:
-            pass
+        judge.upload('example', '/tmp/exemple.out')
 
 
 if __name__ == '__main__':
