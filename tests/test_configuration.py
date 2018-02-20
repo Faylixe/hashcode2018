@@ -16,4 +16,4 @@ def test_configuration():
     assert configuration.SLACK_WEBHOOK == 'http://localhost:6969'
     assert configuration.ROUND == '1'
     assert configuration.DATASET_PATH == '/tmp/dataset'
-    assert configuration.SOLUTION_PATH == '/tmp/solution'
+    assert configuration.SOLUTION_PATH == '/tmp'

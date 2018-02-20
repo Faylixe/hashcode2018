@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # coding: utf8
 
-""" """
+""" Tests utils.eval_solution. """
 
 from getpass import getuser
 from json import loads
 from os import remove
+from os.path import exists
 from tempfile import NamedTemporaryFile
 
 from utils.eval_solution import _get_challenger_score
@@ -36,6 +37,7 @@ def test_set_challenger_score():
     _set_challenger_score('/tmp', 42)
     with open('/tmp/challenger.score', 'r') as stream:
         assert int(stream.read()) == 42
+    remove('/tmp/challenger.score')
 
 
 def _verify_payload(payload, expected):
@@ -73,31 +75,29 @@ class _MockJudge(object):
         self._uploaded = (dataset, solution)
 
 
-def _verify_judge(judge):
-    """ Check the given mock judge instance. """
-    assert judge._logged is not None
-    assert judge._logged[0] == 'foo@gmail.com'
-    assert judge._logged[0] == 'bar'
-    assert judge._uploaded is not None
-    assert judge._uploaded[0] == dataset
-    assert judge._uploaded[1] == solution
-
-
-def _verify_slack(slack_holder, solution):
-    """ Check the slack holder after eval. """
-    expected = 'New solution for dataset test (Score : 1)\n'
-    expected += 'Solution file : %s.txt' % solution
-    _verify_payload(slack_holder.payload, expected)
-
-
 def test_evaluate(slack_holder):
-    """ """
+    """ Test solution evaluation function. """
     judge = _MockJudge()
-    solution = NamedTemporaryFile()
-    evaluate(
-        'test',
-        solution.name,
-        lambda _: judge,
-        lambda d, s: 1)
-    _verify_judge(judge)
-    _verify_slack(slack_holder, solution.name)
+    with NamedTemporaryFile() as solution:
+        evaluate(
+            'test',
+            solution.name,
+            lambda _: judge,
+            lambda d, s: 1)
+        print(solution.name)
+        assert judge._logged is not None
+        assert judge._logged[0] == 'foo@gmail.com'
+        assert judge._logged[1] == 'bar'
+        assert judge._uploaded is not None
+        assert judge._uploaded[0] == 'test'
+        assert judge._uploaded[1] == solution.name
+        expected = 'New solution for dataset test (Score : 1)\n'
+        expected += 'Solution file : %s' % solution.name
+        _verify_payload(slack_holder.payload, expected)
+        assert exists(solution.name + '.score')
+        assert exists('/tmp/test/challenger.score')
+        with open(solution.name + '.score', 'r') as stream:
+            assert int(stream.read()) == 1
+        with open('/tmp/test/challenger.score') as stream:
+            assert int(stream.read()) == 1
+        remove('/tmp/test/challenger.score')
