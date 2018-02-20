@@ -4,7 +4,6 @@
 """ Solution evaluation and managment module. """
 
 from getpass import getuser
-from os import getcwd
 from os.path import dirname, exists, join
 from sys import argv
 
@@ -15,8 +14,7 @@ from utils.slack import notify
 
 __author__ = 'fv'
 
-_DATASET_PATH = 'dataset'
-_CHALLENGER_PATH = 'challenger.score'
+_CHALLENGER_FILE = 'challenger.score'
 _SCORE_FILE = '%s.score'
 _MIN_SCORE = 0
 
@@ -28,7 +26,7 @@ def _get_challenger_score(directory):
     :param directory: Target directory to read challenger file from.
     :returns: Challenger score as best solution known for this dataset.
     """
-    path = join(directory, _CHALLENGER_PATH)
+    path = join(directory, _CHALLENGER_FILE)
     if not exists(path):
         return _MIN_SCORE
     with open(path, 'r') as stream:
@@ -41,7 +39,7 @@ def _set_challenger_score(directory, score):
     :param directory: Directory to write challenger in.
     :param score: New challenger score.
     """
-    path = join(directory, _CHALLENGER_PATH)
+    path = join(directory, _CHALLENGER_FILE)
     with open(path, 'w') as stream:
         stream.write(str(score))
 
@@ -62,20 +60,35 @@ def _send_notification(dataset, score, target):
     notify(message, user=user)
 
 
-if __name__ == '__main__':
-    """ TODO : Document ."""
-    dataset = argv[0]
-    solution = argv[1]
-    directory = join(_DATASET_PATH, dataset)
+def evaluate(
+        dataset,
+        solution,
+        judge_factory,
+        score_factory=get_score_from_file):
+    """ Evaluates the given solution, computing it score
+    and uploading it to the judge platform.
+
+    :param dataset:
+    :param solution:
+    :param judge_factory:
+    :param score_factory:
+    """
+    directory = join(configuration.DATASET_PATH, dataset)
+    score = score_factory(dataset, solution)
     with open(_SCORE_FILE % solution, 'w') as stream:
-        stream.write(score)
-    score = get_score_from_file(dataset, solution)
-    if score > _get_challenger(directory):
-        _set_challenger(directory, score)
+        stream.write(str(score))
+    if score > _get_challenger_score(directory):
+        _set_challenger_score(directory, score)
         # TODO : Write current challenger script into compilation file
     _send_notification(dataset, score)
-    with JudgeSite(configuration.ROUND) as judge:
+    with judge_factory(configuration.ROUND) as judge:
         judge.login(
             configuration.GOOGLE_USERNAME,
             configuration.GOOGLE_PASSWORD)
-        judge.upload(dataset, join(getcwd(), solution))
+        judge.upload(dataset, solution)
+
+
+if __name__ == '__main__':
+    dataset = argv[0]
+    solution = argv[1]
+    main(dataset, solution, JudgeSite)

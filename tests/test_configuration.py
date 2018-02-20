@@ -15,3 +15,5 @@ def test_configuration():
     assert configuration.GOOGLE_PASSWORD == 'bar'
     assert configuration.SLACK_WEBHOOK == 'http://localhost:6969'
     assert configuration.ROUND == '1'
+    assert configuration.DATASET_PATH == '/tmp/dataset'
+    assert configuration.SOLUTION_PATH == '/tmp/solution'

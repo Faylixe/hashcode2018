@@ -15,6 +15,8 @@ environ['GOOGLE_USERNAME'] = 'foo@gmail.com'
 environ['GOOGLE_PASSWORD'] = 'bar'
 environ['SLACK_WEBHOOK'] = 'http://localhost:6969'
 environ['ROUND'] = '1'
+environ['DATASET_PATH'] = '/tmp/dataset'
+environ['SOLUTION_PATH'] = '/tmp/solution'
 
 
 class _PayloadHolder(object):

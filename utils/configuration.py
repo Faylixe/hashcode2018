@@ -16,5 +16,7 @@ class _Configuration(object):
     GOOGLE_USERNAME = getenv('GOOGLE_USERNAME')
     GOOGLE_PASSWORD = getenv('GOOGLE_PASSWORD')
     ROUND = getenv('ROUND')
+    DATASET_PATH = getenv('DATASET_PATH', 'dataset')
+    SOLUTION_PATH = getenv('SOLUTION_PATH', 'solution')
 
 configuration = _Configuration()

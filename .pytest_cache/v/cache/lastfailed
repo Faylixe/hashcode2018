@@ -1,3 +1,4 @@
 {
-  "tests/test_dataset.py::test_reader": true
+  "tests/test_dataset.py::test_reader": true,
+  "tests/test_eval_solution.py::test_evaluate": true
 }
