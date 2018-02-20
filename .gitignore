@@ -103,5 +103,5 @@ ENV/
 *.pkl
 .profile
 print_cookie.py
-
+.pytest_cache
 .vscode
