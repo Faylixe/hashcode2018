@@ -8,7 +8,7 @@ First retrieve repository content using ``git`` and initialize the contest
 environment using ``init.sh`` script :
 
 ```bash
-git clone https://github.com/Faylixe/hashcode2018
+git clone -b pizza https://github.com/Faylixe/hashcode2018
 bash init.sh workspace_name
 source venv/bin/activate
 ```
