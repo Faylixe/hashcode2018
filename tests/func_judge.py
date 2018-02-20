@@ -25,8 +25,6 @@ def test_login():
             judge.upload('small', '/tmp/exemple.out')
         except:
             pass
-        import time
-        time.sleep(10000)
 
 
 if __name__ == '__main__':
