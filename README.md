@@ -19,10 +19,10 @@ The **workspace_name** parameter should be your initial.
 ## Usage
 
 The initialization script will configure required environment variable and a ``virtualenv`` which
-have required python dependencies and the ``test`` command.
+have required python dependencies and the ``testrun`` command.
 
 ```bash
-test greedy small
+testrun greedy small
 ```
 
 It will run the script ``greedy.py`` located in your workspace (under ``workspace/your_initial``directory),

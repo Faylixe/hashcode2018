@@ -91,7 +91,7 @@ _verify_args() {
     fi
 }
 
-test() {
+testrun() {
     _verify_args "$@"
     if [ $? -ne 0 ]
     then
