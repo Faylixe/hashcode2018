@@ -58,6 +58,15 @@ class DatasetReader(object):
         return [c for c in self._lines.pop(0)]
 
 
+def load_dataset_from_file(path):
+    """ Loads the dataset from the given file.
+
+    :returns: Dataset file path.
+    """
+    with open(path, 'r') as stream:
+        return load_dataset(stream)
+
+
 def load_dataset(stream=stdin):
     """ Loads the dataset from the standard input.
 

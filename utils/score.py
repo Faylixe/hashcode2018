@@ -3,21 +3,23 @@
 
 """ Solution scoring functions. """
 
+from utils.dataset import DatasetReader
+from utils.dataset import load_dataset_from_file
+
 __author__ = 'fv'
 
 
-def load_solution(path):
+def load_solution_from_file(path):
     """ Load and returns solution from given path.
 
     :param path: Path of the solution file to load.
     """
-    if not exists(path):
-        raise IOError('Solution file %s not found' % path)
     with open(path, 'r') as stream:
+        reader = DatasetReader(stream)
         raise NotImplementedError()
 
 
-def get_score_from_file(dataset, solution_path):
+def get_score_from_file(dataset_path, solution_path):
     """ Computes the expeceted score for the given
     problem dataset / solution files pair.
 
@@ -25,7 +27,8 @@ def get_score_from_file(dataset, solution_path):
     :param solution_path: Path of the solution to get score for.
     :returns: Score of the given solution.
     """
-    solution = load_solution(solution_path)
+    solution = load_solution_from_file(solution_path)
+    dataset = load_dataset_from_file(dataset_path)
     return get_score(dataset, solution)
 
 

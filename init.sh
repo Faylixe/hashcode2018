@@ -14,7 +14,7 @@ read username
 echo -n 'Password: '
 read -s password
 
-# TODO : Add round id here.
+# TODO : Add round id here.
 round=''
 
 # Configure workspace.
@@ -41,32 +41,40 @@ _get_solution_path() {
     local directory="$SOLUTION_PATH/$2"
     mkdir -p $directory
     local script=$1
-    local signature="${script//./_}"
-    local result="$directory/$WORKSPACE-$signature-$(ls $directory | wc -l).out"
+    local signature=${script/./_}
+    local count="$(ls $directory | wc -l)"
+    local result="$directory/$WORKSPACE-$signature-$(($n)).out"
     echo "$result"
 }
 
 _commit() {
     git add -A
-    git commit -m "[RUN] $WORKSPACE/$1 $2"
+    git commit -m "[RUN] workspace/$WORKSPACE/$1 $2"
     git push
 }
 
 _exec() {
     git pull
-    output=${3:-/dev/stdout}
-    cat dataset/$2 | python -m workspace.$WORKSPACE.$1 > $output
+    cat dataset/$2 | python -m workspace.$WORKSPACE.$1 > ${4:-/dev/stdout} 2> $3
+}
+
+_report() {
+    report=$(mktemp /tmp/hashcode_report.XXXXXX)
+    echo $1 > $report
+    cat $2 >> $report
+    cat $report | python -m utils.slack
+    rm $report
+    rm $2
+}
+
+_push_result() {
+    error_file=$(mktemp /tmp/hashcode_error.XXXXXX)
+    python -m utils.eval_solution $2 $3 2> $error_file
     if [ $? -eq 0 ]
     then
-        python -m utils.eval_solution $2 $output
-        if [ $? -eq 0 ]
-        then
-            _commit $1 $2
-        else
-            python -m utils.slack < "Error error on evaluating score for output $output"
-        fi
+         _commit $1 $2
     else
-        python utils/slack.py < "Execution error on dataset $2 with $WORKSPACE/$1"
+        _report "Error error on evaluating score for output $output (see stack trace below)" $error_file
     fi
 }
 
@@ -77,9 +85,9 @@ _verify_args() {
         return 1
     fi
     script=$1
-    if [ ! -f workspace/$WORKSPACE/$1 ]
+    if [ ! -f workspace/$WORKSPACE/$1.py ]
     then
-        echo "Unknown script workspace/$WORKSPACE/$1. Abort."
+        echo "Unknown script workspace/$WORKSPACE/$1.py. Abort."
         return 1
     fi
     if [ ! -f dataset/$2 ]
@@ -89,23 +97,30 @@ _verify_args() {
     fi
 }
 
-testrun() {
-    _verify_args "$@"
+_run() {
+    _verify_args $1 $2
     if [ $? -ne 0 ]
     then
         return 1
     fi
-    _exec "$@"
+    git pull
+    cat dataset/$2 | python -m workspace.$WORKSPACE.$1 > $3 2> $4
+}
+
+testrun() {
+    _run $1 $2 /dev/stdout /dev/stderr
 }
 
 run() {
-    _verify_args "$@"
+    output=$(_get_solution_path $1 $2)
+    error_file=$(mktemp /tmp/hashcode_error.XXXXXX)
+    _run $1 $2 $output $error_file
     if [ $? -ne 0 ]
     then
-        return 1
+        _report "Execution error on workspace/$WORKSPACE/$1 using dataset '$2' (see stack trace below)" $error_file
+    else
+        _push_result $1 $2 $output
     fi
-    output=$(_get_solution_path "$@")
-    _exec "$@" $output
 }
 EOL
 source venv/bin/activate

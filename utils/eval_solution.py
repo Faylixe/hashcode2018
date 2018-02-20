@@ -73,12 +73,12 @@ def evaluate(
     """ Evaluates the given solution, computing it score
     and uploading it to the judge platform.
 
-    :param dataset:
-    :param solution:
-    :param judge_factory:
-    :param score_factory:
+    :param dataset: Name of the dataset to evaluate solution for.
+    :param solution: Solution to evaluate.
+    :param judge_factory: Judge object factory.
+    :param score_factory: (Optional) Scoring function
     """
-    score = score_factory(dataset, solution)
+    score = score_factory(join(configuration.DATASET_PATH, dataset), solution)
     with open(_SCORE_FILE % solution, 'w') as stream:
         stream.write(str(score))
     directory = join(configuration.SOLUTION_PATH, dataset)
@@ -91,15 +91,14 @@ def evaluate(
             configuration.GOOGLE_USERNAME,
             configuration.GOOGLE_PASSWORD)
         judge.upload(dataset, solution)
-        # TODO : Consider sending notification when done (inside judge ?)
+        notify('Solution file %s uploaded to judge platform' % solution)
 
 
 if __name__ == '__main__':
-    dataset = argv[0]
-    solution = argv[1]
+    dataset = argv[1]
+    solution = argv[2]
     if not exists(join(configuration.DATASET_PATH, dataset)):
-        raise IOError('Dataset %s not found')
-    # TODO : Check solution path or solution name (dataset relative)
+        raise IOError('Dataset %s not found' % join(configuration.DATASET_PATH, dataset))
     if not exists(solution):
-        raise IOError('Solution file not found')
+        raise IOError('Solution file %s not found' % solution)
     evaluate(dataset, solution, JudgeSite)
