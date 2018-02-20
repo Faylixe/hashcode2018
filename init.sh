@@ -58,15 +58,15 @@ _commit() {
 _exec() {
     git pull
     output=${3:-/dev/stdout}
-    cat dataset/$2 | python workspace/$WORKSPACE/$1 > $output
+    cat dataset/$2 | python -m workspace.$WORKSPACE.$1 > $output
     if [ $? -eq 0 ]
     then
-        python utils/eval_solution.py $2 $output
+        python -m utils.eval_solution $2 $output
         if [ $? -eq 0 ]
         then
             _commit $1 $2
         else
-            python utils/slack.py < "Error error on evaluating score for output $output"
+            python -m utils.slack < "Error error on evaluating score for output $output"
         fi
     else
         python utils/slack.py < "Execution error on dataset $2 with $WORKSPACE/$1"
