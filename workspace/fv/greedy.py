@@ -24,9 +24,9 @@ def main():
                 mushroom += 1
             if mushroom >= l and tomato >= l:
                 slices.append((i, offset, i, j))
-                offset, tomato, mushroom, cells = j, 0, 0, 0
+                offset, tomato, mushroom, cells = j + 1, 0, 0, 0
             if cells == h:
-                offset, tomato, mushroom, cells = j, 0, 0, 0
+                offset, tomato, mushroom, cells = j + 1, 0, 0, 0
     print(len(slices))
     for pslice in slices:
         print('%d %d %d %d' % pslice)
