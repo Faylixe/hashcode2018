@@ -2,6 +2,14 @@
 
 Qualification round code for Google Hash Code 2018
 
+
+## Dependencies
+
+- git
+- firefox
+- python3
+- virtualenv
+
 ## Installation
 
 First retrieve repository content using ``git`` and initialize the contest
