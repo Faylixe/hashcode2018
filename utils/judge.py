@@ -9,6 +9,7 @@ from pickle import load
 from requests import Session
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -72,6 +73,11 @@ def _create_driver():
     options = Options()
     if configuration.SELENIUM_DRIVER == 'silent':
         options.add_argument('--headless')
+    if configuration.FIREFOX_BINARY is not None:
+        binary = FirefoxBinary(configuration.FIREFOX_BINARY)
+        return webdriver.Firefox(
+            firefox_options=options,
+            firefox_binary=binary)    
     return webdriver.Firefox(firefox_options=options)
 
 
