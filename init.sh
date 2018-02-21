@@ -27,9 +27,9 @@ then
 fi
 
 # Configure virtualenv.
-# TODO : Remove old virtualenv if any ?
 virtualenv venv
-echo "export SLACK_WEBHOOK='https://hooks.slack.com/services/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'" >> venv/bin/activate
+# TODO : Add slack webhook
+echo "export SLACK_WEBHOOK='TO ADD'" >> venv/bin/activate
 echo "export GOOGLE_USERNAME='$username'" >> venv/bin/activate
 echo "export GOOGLE_PASSWORD='$password'" >> venv/bin/activate
 echo "export ROUND='$round'" >> venv/bin/activate
