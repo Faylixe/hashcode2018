@@ -16,8 +16,6 @@ def main():
         cells = 0
         mushroom = 0
         tomato = 0
-        def reset(j):
-            offset, tomato, mushroom, cells = j, 0, 0, 0
         for j in range(c):
             cells += 1
             if pizza[i][j] == 'T':
@@ -26,9 +24,9 @@ def main():
                 mushroom += 1
             if mushroom >= l and tomato >= l:
                 slices.append((i, offset, i, j))
-                reset(j)
+                offset, tomato, mushroom, cells = j, 0, 0, 0
             if cells == h:
-                reset(j)
+                offset, tomato, mushroom, cells = j, 0, 0, 0
     print(len(slices))
     for pslice in slices:
         print('%d %d %d %d' % pslice)
