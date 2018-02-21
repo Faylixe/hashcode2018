@@ -47,6 +47,7 @@ _get_solution_path() {
 }
 
 _commit() {
+    git pull
     git add -A
     git commit -m "[RUN] workspace/$WORKSPACE/$1 $2"
     git push
