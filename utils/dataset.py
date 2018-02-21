@@ -76,5 +76,5 @@ def load_dataset(stream=stdin):
     r, c, l, h = reader.next_ints()
     pizza = []
     for i in range(r):
-        pizza.append(reader.next_row)
+        pizza.append(reader.next_row())
     return r, c, l, h, pizza
