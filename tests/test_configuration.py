@@ -17,3 +17,4 @@ def test_configuration():
     assert configuration.ROUND == '1'
     assert configuration.DATASET_PATH == '/tmp/dataset'
     assert configuration.SOLUTION_PATH == '/tmp'
+    assert configuration.FIREFOX_BINARY is None

@@ -44,7 +44,6 @@ def _verify_payload(payload, expected):
     """ Check the given slack payload. """
     assert payload is not None
     decoded = loads(payload.decode('utf-8'))
-    assert decoded['username'] == getuser()
     assert decoded['attachments'][0]['text'] == expected
 
 
@@ -84,16 +83,12 @@ def test_evaluate(slack_holder):
             solution.name,
             lambda _: judge,
             lambda d, s: 1)
-        print(solution.name)
         assert judge._logged is not None
         assert judge._logged[0] == 'foo@gmail.com'
         assert judge._logged[1] == 'bar'
         assert judge._uploaded is not None
         assert judge._uploaded[0] == 'test'
         assert judge._uploaded[1] == solution.name
-        expected = 'New solution for dataset test (Score : 1)\n'
-        expected += 'Solution file : %s' % solution.name
-        _verify_payload(slack_holder.payload, expected)
         assert exists(solution.name + '.score')
         assert exists('/tmp/test/challenger.score')
         assert exists('/tmp/test/challenger.solution')
