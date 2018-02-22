@@ -122,6 +122,18 @@ run() {
         _push_result $1 $2 $output
     fi
 }
+
+runall() {
+    if [ ! -f workspace/$WORKSPACE/$1.py ]
+    then
+        echo "Unknown script workspace/$WORKSPACE/$1.py. Abort."
+        return 1
+    fi
+    for dataset in `ls dataset/`
+    do
+        run $1 $dataset
+    done
+}
 EOL
 source venv/bin/activate
 pip install -r requirements.txt
