@@ -131,7 +131,7 @@ runall() {
     fi
     for dataset in `ls dataset/`
     do
-        echo "=====================""
+        echo "====================="
         echo "Running $1 on dataset $dataset"
         run $1 $dataset
     done
