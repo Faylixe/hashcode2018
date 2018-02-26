@@ -3,12 +3,6 @@
 
 """ """
 
-from sys import stdout, stderr
-from itertools import permutations
-from random import choice, shuffle
-
-from utils.dataset import load_dataset
-from utils.score import get_score
 
 #pythran export is_valid(str list list,int, int list, bool list list)
 def is_valid(pizza, l, pslice, available):
@@ -74,6 +68,7 @@ def get_candidates(pizza, sizes, l, available=None):
     return candidates
 
 
+#pythran export is_available(bool list list, int list)
 def is_available(available, candidate):
     for x in range(candidate[0], candidate[2] + 1):
         for y in range(candidate[1], candidate[3] + 1):
@@ -193,5 +188,3 @@ def main():
         print('%d %d %d %d' % pslice)
     stderr.write('Score : %d\n' % get_score((r, c, l, h, pizza), (len(solution), solution)))
 
-if __name__ == '__main__':
-    main()
