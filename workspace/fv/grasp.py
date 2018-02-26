@@ -17,8 +17,8 @@ def is_valid(pizza, l, pslice, available):
         return False
     mushroom = 0
     tomato = 0
-    for i in range(r1, r2):
-        for j in range(c1, c2):
+    for i in range(r1, r2 + 1):
+        for j in range(c1, c2 + 1):
             if available is not None and not available[i][j]:
                 return False
             if pizza[i][j] == 'T':
@@ -30,21 +30,18 @@ def is_valid(pizza, l, pslice, available):
 
 def cut(pizza, size, l, available):
     x = 0
-    y = 0
-    while x < len(pizza):
-        row_used = False
-        while y < len(pizza[0]):
-            pslice = (x, y, x + size[0], y + size[1])
+    while x < len(pizza) - size[0]:
+        y = 0
+        while y < len(pizza[0]) - size[1]:
+            pslice = (x, y, x + size[0] - 1, y + size[1] - 1)
+            stderr.write('Slice : %d, %d, %d, %d' % pslice)
             if is_valid(pizza, l, pslice, available):
+                stderr.write(' (Valid)\n')
                 yield pslice
-                row_used = True
-                y += size[1]
             else:
-                y += 1
-        if row_used:
-            x += size[0]
-        else:
-            x += 1
+                stderr.write(' (Not valid)\n')
+            y += 1
+        x += 1
 
 
 def overlap(a, b):
@@ -72,6 +69,7 @@ def get_sizes(l, h):
 def get_candidates(pizza, sizes, l, available=None):
     candidates = []
     for size in sizes:
+        stderr.write('Generate candidate for size %sx%s\n' % size)
         for s in cut(pizza, size, l, available):
             candidates.append(s)
     return candidates
@@ -79,6 +77,7 @@ def get_candidates(pizza, sizes, l, available=None):
 
 def solve_randomly(pizza, sizes, l):
     candidates = get_candidates(pizza, sizes, l)
+    stderr.write('%d candidates found\n' % len(candidates))
     subsolution = []
     while len(candidates) > 0:
         candidate = choice(candidates)
@@ -102,6 +101,7 @@ def get_candidate_score(candidate):
 
 def main():
     r, c, l, h, pizza = load_dataset()
+    stderr.write('Problem constraints : r=%d, c=%d, l=%d, h=%d\n' % (r, c, l, h))
     sizes = get_sizes(l, h)
     stderr.write('Sizes : %s\n' % str(sizes))
     stderr.write('Compute initial solution\n')
