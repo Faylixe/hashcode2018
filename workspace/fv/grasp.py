@@ -34,27 +34,24 @@ def cut(pizza, size, l, available):
         y = 0
         while y < len(pizza[0]) - size[1]:
             pslice = (x, y, x + size[0] - 1, y + size[1] - 1)
-            stderr.write('Slice : %d, %d, %d, %d' % pslice)
             if is_valid(pizza, l, pslice, available):
-                stderr.write(' (Valid)\n')
                 yield pslice
-            else:
-                stderr.write(' (Not valid)\n')
             y += 1
         x += 1
 
 
 def overlap(a, b):
-    if a[0] > b[2] or b[0] > a[2]:
-        return False
-    if a[1] < b[3] or b[1] < a[3]:
-        return False
-    return True
+    acells = [(x, y) for x in range(a[0], a[2] + 1) for y in range(a[1], a[3] + 1)]
+    bcells = [(x, y) for x in range(b[0], b[2] + 1) for y in range(b[1], b[3] + 1)]
+    for cell in acells:
+        if cell in bcells:
+            return True
+    return False
 
 
 def get_sizes(l, h):
     sizes = []
-    areas = [i for i in range(l * 2, h, 2)]
+    areas = [i for i in range(l * 2, h + 1)]
     for area in areas:
         for prime in (1, 2, 3, 5, 7):
             if area % prime == 0:
@@ -78,18 +75,18 @@ def get_candidates(pizza, sizes, l, available=None):
 def solve_randomly(pizza, sizes, l):
     candidates = get_candidates(pizza, sizes, l)
     stderr.write('%d candidates found\n' % len(candidates))
-    subsolution = []
+    solution = []
     while len(candidates) > 0:
         candidate = choice(candidates)
         candidates.remove(candidate)
         valid = True
-        for choosen in subsolution:
+        for choosen in solution:
             if overlap(choosen, candidate):
                 valid = False
                 break
         if valid:
-            subsolution.append(candidate)
-    return subsolution
+            solution.append(candidate)
+    return solution
 
 
 def get_candidate_score(candidate):
