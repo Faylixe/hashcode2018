@@ -31,13 +31,14 @@ class Vehicule:
     def __init__(self, id, bonus, steps):
         self.id = id
         self.pos = (0, 0)
+        self.current_steps = 0
         self.remaining_steps = steps
         self.done_rides = []
         self.bonus = bonus
         self.current_gain = 0
 
     def possible(self, ride):
-        time_to_go = distance(self.pos, ride.start_pos)
+        time_to_go = self.current_steps + distance(self.pos, ride.start_pos)
         true_start = time_to_go + crop_min(ride.early_start - time_to_go)
         true_end = true_start + distance(ride.start_pos, ride.end_pos)
         if true_start >= ride.early_start and true_end <= ride.latest_end and (self.remaining_steps - true_end) >= 0:
@@ -46,18 +47,19 @@ class Vehicule:
             return -1
 
     def gain(self, ride, true_start):
-        g = self.current_gain + distance(ride.start_pos, ride.end_pos)
+        g = self.current_gain + distance(ride.start_pos, ride.end_pos) - true_start
         if true_start == ride.early_start:
             g += self.bonus
         return g
 
     def do(self, ride):
         if self.possible(ride) >= 0:
-            time_to_go = distance(self.pos, ride.start_pos)
+            time_to_go = self.current_steps + distance(self.pos, ride.start_pos)
             true_start = time_to_go + crop_min(ride.early_start - time_to_go)
             true_end = true_start + distance(ride.start_pos, ride.end_pos)
             self.pos = ride.end_pos 
             self.remaining_steps -= true_end
+            self.current_steps = true_end
             self.done_rides.append(ride.id)
             self.current_gain = self.gain(ride, true_start)
             ride.done = True

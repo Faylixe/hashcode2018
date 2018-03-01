@@ -72,8 +72,6 @@ def main():
     for ride_id, ride_array in enumerate(rides):
         rides_new.append(Ride(ride_id, ride_array))
 
-    rides_new = sorted(rides_new, key=lambda r: distance(r.start_pos, r.end_pos) - distance((0, 0), r.start_pos) - crop_min(r.early_start - distance((0, 0), r.start_pos)), reverse=False)
-
     for ride in rides_new:
         candidates = []
         for vehicule in vehicules:
