@@ -8,14 +8,15 @@ from sys import stdout, stderr
 from utils.dataset import load_dataset
 from utils.utils import distance, ride_start_pos, ride_end_pos, ride_step_range
 
-def costForVehicule(vehicule, ride):
+def costForVehicule(vehicule, ride, step):
+
     startPos = ride_start_pos(ride)
     distToStart = distance(startPos, vehicule.position)
     ride_start = ride_step_range(ride)[0]
     lbt = vehicule.busyUntil
 
 
-    return (lbt + distToStart) - ride_start
+    return max((lbt + distToStart) - ride_start, 0)
 
 class Vehicule:
     def __init__(self, id):
@@ -30,8 +31,9 @@ class Vehicule:
         self.id = id
         self.rides = []
 
+
     def updateStep(self, step):
-        if step >= self.busyUntil:
+        if self.isBusy and step >= self.busyUntil:
             self.posx = self.nextPosX
             self.posy = self.nextPosY
             self.isBusy = False
@@ -43,11 +45,8 @@ class Vehicule:
 
         return (self.posx, self.posy)
 
-    def canPerformRide(self, ride):
-        if self.isBusy:
-            return False
-
-        return True
+    def canPerformRide(self, ride, step):
+        return not self.isBusy or step >= self.busyUntil
 
         # startPos = ride_start_pos(ride)
         # endPos = ride_end_pos(ride)
@@ -79,7 +78,7 @@ class Vehicule:
         self.busyUntil += totalDistance
         self.rides.append(ride[6])
         self.isBusy = True
-        log('    - Vehicule %s is busy until step %s for total distance of %s (rd: %s)' %(self.id, self.busyUntil, totalDistance, rideDistance))
+        log(' - Vehicule %s is busy until step %s for total distance of %s (rd: %s)' %(self.id, self.busyUntil, totalDistance, rideDistance))
 
 
 class VehiculePool:
@@ -89,18 +88,20 @@ class VehiculePool:
         for x in range(0, numVehicules):
             self.vehicules.append(Vehicule(x))
 
-    def closest(self, ride):
+    def closest(self, ride, step):
         closest = None
 
         bestVehicule = None
         bestCost = None
         for vehicule in self.vehicules:
-            if vehicule.canPerformRide(ride):
-                cost = costForVehicule(vehicule, ride)
+            if vehicule.canPerformRide(ride, step):
+                cost = costForVehicule(vehicule, ride, step)
                 log("vehicule %s cost %s" %(vehicule.id, cost))
                 if bestCost is None or cost < bestCost:
                     bestCost = cost
                     bestVehicule = vehicule
+                    if(bestCost == 0):
+                        break
 
         if bestVehicule is not None:
             log("select vehicule %s" % (bestVehicule.id))
@@ -111,8 +112,6 @@ class VehiculePool:
         log('======= STEP %s ========' %(step))
         for vehicule in self.vehicules:
             vehicule.updateStep(step)
-
-
 
 
 
@@ -139,15 +138,13 @@ def main():
             step = ride[4]
             pool.tick(step)
 
-        log('--- RIDE %s ---' % (ride[6]))
+        log('--- RIDE %s -(%s, %s)--' % (ride[6], ride[4], ride[5]))
         vehicule = None
         while(vehicule is None):
-            vehicule = pool.closest(ride)
+            vehicule = pool.closest(ride, step)
             if vehicule is None:
-                if normalized[maxStepIdx][4] <= step + 1:
-                    log(normalized[maxStepIdx][4])
+                if normalized[maxStepIdx][5] >= step + 1:
                     step += 1
-                    pool.tick(step)
                 else:
                     break
 
