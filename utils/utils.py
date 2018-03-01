@@ -1,5 +1,5 @@
 def distance(ab, xy):
-    return abs(ab[0] - xy[0]) - abs(ab[1] - xy[1])
+    return abs(ab[0] - xy[0]) + abs(ab[1] - xy[1])
 
 def ride_start_pos(ride):
     return (ride[0], ride[1])
