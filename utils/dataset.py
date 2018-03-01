@@ -73,4 +73,5 @@ def load_dataset(stream=stdin):
     :returns: Dataset instance in a generic format.
     """
     reader = DatasetReader(stream)
+    _ = reader.next_ints()
     raise NotImplementedError()
