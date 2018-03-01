@@ -2,3 +2,4 @@ requests
 selenium
 tryalgo
 pytest
+pyfunctional
