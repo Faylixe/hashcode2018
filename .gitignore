@@ -106,3 +106,4 @@ print_cookie.py
 .pytest_cache
 .vscode
 bin/
+README.txt
