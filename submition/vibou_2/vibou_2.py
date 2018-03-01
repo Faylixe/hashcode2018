@@ -78,7 +78,7 @@ class Vehicule:
         self.busyUntil += totalDistance
         self.rides.append(ride[6])
         self.isBusy = True
-        log(' - Vehicule %s is busy until step %s for total distance of %s (rd: %s)' %(self.id, self.busyUntil, totalDistance, rideDistance))
+        log('Select Vehicule %s. It will be busy until step %s for total distance of %s (rd: %s)' %(self.id, self.busyUntil, totalDistance, rideDistance))
 
 
 class VehiculePool:
@@ -96,7 +96,7 @@ class VehiculePool:
         for vehicule in self.vehicules:
             if vehicule.canPerformRide(ride, step):
                 cost = costForVehicule(vehicule, ride, step)
-                log("vehicule %s cost %s" %(vehicule.id, cost))
+                # log("vehicule %s cost %s" %(vehicule.id, cost))
                 if bestCost is None or cost < bestCost:
                     bestCost = cost
                     bestVehicule = vehicule
@@ -104,7 +104,7 @@ class VehiculePool:
                         break
 
         if bestVehicule is not None:
-            log("select vehicule %s" % (bestVehicule.id))
+            # log("select vehicule %s" % (bestVehicule.id))
             return bestVehicule
 
 
@@ -127,31 +127,27 @@ def main():
     normalized = []
     idx = 0
     for ride in rides:
-        normalized.append([ride[0], ride[1], ride[2], ride[3], ride[4], ride[5], idx])
+        normalized.append([ride[0], ride[1], ride[2], ride[3], ride[4], ride[5], idx, False])
         idx += 1
     normalized.sort(key=lambda ride:ride[4])
 
-    step = -1
-    maxStepIdx = 0
+    max_step = 0
     for ride in normalized:
-        if(ride[4] != step):
-            step = ride[4]
-            pool.tick(step)
+        max_step = max(max_step, ride[5])
 
-        log('--- RIDE %s -(%s, %s)--' % (ride[6], ride[4], ride[5]))
-        vehicule = None
-        while(vehicule is None):
+    for step in range(0, max_step):
+        filtered_rides = filter(lambda r: not r[7] and r[4] <= step and r[5] >= step, normalized)
+
+        if len(filtered_rides) == 0 or step < filtered_rides[0][4]:
+            continue
+
+        pool.tick(step)
+        for ride in filtered_rides:
+            log('--- RIDE %s -(%s, %s)--' % (ride[6], ride[4], ride[5]))
             vehicule = pool.closest(ride, step)
-            if vehicule is None:
-                if normalized[maxStepIdx][5] >= step + 1:
-                    step += 1
-                else:
-                    break
-
-        if vehicule is not None:
-            vehicule.performRide(ride)
-
-        maxStepIdx += 1
+            if vehicule is not None:
+                vehicule.performRide(ride)
+                ride[7] = True
 
     for vehicule in pool.vehicules:
         print('%s %s' % (str(len(vehicule.rides)), ' '.join([str(r) for r in vehicule.rides])))
