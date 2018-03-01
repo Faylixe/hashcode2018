@@ -10,18 +10,18 @@ from utils.utils import distance, ride_start_pos, ride_end_pos, ride_step_range
 
 def costForVehicule(vehicule, ride):
     startPos = ride_start_pos(ride)
-    endPos = ride_end_pos(ride)
-
     distToStart = distance(startPos, vehicule.position)
-    rideDistance = distance(startPos, endPos)
-    totalDistance = distToStart + rideDistance
+    ride_start = ride_step_range(ride)[0]
+    lbt = vehicule.lastBusyStep
 
-    return totalDistance
+
+    return (lbt + distToStart) - ride_start
 
 class Vehicule:
     def __init__(self, id):
         self.posx = 0
         self.posy = 0
+        self.lastBusyStep = 0
 
         self.nextPosX = 0
         self.nextPosY = 0
@@ -34,6 +34,7 @@ class Vehicule:
         if step >= self.busyUntil:
             self.posx = self.nextPosX
             self.posy = self.nextPosY
+            self.lastBusyStep = step - 1
             self.isBusy = False
 
     @property
