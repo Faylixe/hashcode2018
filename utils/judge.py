@@ -95,10 +95,10 @@ _TRIGGER_EVENT = '$c(angular.element(document.getElementById("%s")).scope().ctrl
 
 # NOTE : The dataset mapping should be updated at begining of the round.
 _DATASETS = {
-    'example': 2,
-    'small': 3,
-    'medium': 4,
-    'big': 5
+    'a': 4,
+    'small': 5,
+    'medium': 6,
+    'big': 7
 }
 
 class JudgeSite(object):
@@ -161,10 +161,10 @@ class JudgeSite(object):
         self._click((By.XPATH, _SUBMISSION_XPATH))
         # Source code upload.
         archive = _create_source_archive()
-        source_holder = self._driver.find_element_by_id('input_1')
+        source_holder = self._driver.find_element_by_id('input_3')
         source_holder.clear()
         source_holder.send_keys(archive)
-        self._driver.execute_script(_TRIGGER_EVENT % ('input_1', 'input_1'))
+        self._driver.execute_script(_TRIGGER_EVENT % ('input_3', 'input_3'))
         # Solution upload.
         path = abspath(solution)
         identifier = 'input_%d' % _DATASETS[dataset]
