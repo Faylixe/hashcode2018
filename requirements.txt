@@ -3,3 +3,4 @@ selenium
 tryalgo
 pytest
 pyfunctional
+pymp-pypi
