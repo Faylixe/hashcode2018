@@ -73,5 +73,9 @@ def load_dataset(stream=stdin):
     :returns: Dataset instance in a generic format.
     """
     reader = DatasetReader(stream)
-    _ = reader.next_ints()
-    raise NotImplementedError()
+    r, c, f, n, b, t = reader.next_ints()
+    rides = []
+    for i in range(n):
+        a, b, x, y, s, f = reader.next_ints()
+        rides.append((a, b, x, y, s, f))
+    return r, c, f, n, b, t, rides
