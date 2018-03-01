@@ -74,16 +74,24 @@ def main():
 
     rides_new = sorted(rides_new, key=lambda r: distance(r.start_pos, r.end_pos) - distance((0, 0), r.start_pos) - crop_min(r.early_start - distance((0, 0), r.start_pos)), reverse=False)
 
-    for ride in rides_new:
-        candidates = []
-        for vehicule in vehicules:
-            score = vehicule.possible(ride)
-            if score >= 0:
-                candidates.append((vehicule, score))
-        if len(candidates) > 0:
-            candidates = sorted(candidates, key=lambda c: c[1], reverse=True)
-            top = candidates[0]
-            top[0].do(ride)
+    log("{} {}".format(len(vehicules), len(rides_new)))
+
+    for vehicule in vehicules:
+        end_max = False
+        while not end_max:
+            candidates = []
+            for ride in rides_new:
+                if ride.done:
+                    continue
+                score = vehicule.possible(ride)
+                if score >= 0:
+                    candidates.append((ride, score))
+            if len(candidates) > 0:
+                candidates = sorted(candidates, key=lambda c: c[1], reverse=True)
+                top = candidates[0]
+                vehicule.do(top[0])
+            else:
+                end_max = True
 
     count = 0
     for r in rides_new:
