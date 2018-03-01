@@ -58,7 +58,7 @@ def _create_source_archive():
     :returns: The path of the temporary archive file created.
     """
     suffix = uuid()
-    path = _ARCHIVE_FILE % suffix
+    path = "source.zip"
     with ZipFile(path, 'w', ZIP_DEFLATED) as archive:
         for source in _build_archive_filelist():
             if exists(source):
