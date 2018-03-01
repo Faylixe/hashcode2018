@@ -16,7 +16,13 @@ def load_solution_from_file(path):
     """
     with open(path, 'r') as stream:
         reader = DatasetReader(stream)
-        raise NotImplementedError()
+        rides = []
+        while True:
+            try:
+                rides.append(reader.next_ints())
+            except ValueError:
+                break
+        return rides
 
 
 def get_score_from_file(dataset_path, solution_path):
