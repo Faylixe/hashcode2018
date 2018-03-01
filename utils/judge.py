@@ -4,7 +4,7 @@
 """ Toolkit for automatic submission to judge platform. """
 
 from os import listdir
-from os.path import join, isdir, isfile, abspath
+from os.path import join, isdir, isfile, abspath, exists
 from pickle import load
 from requests import Session
 from selenium import webdriver
@@ -42,7 +42,7 @@ def _build_archive_filelist():
 
     :returns: List of file to archive.
     """
-    files = ['requirements.txt', 'init.sh']
+    files = ['requirements.txt', 'init.sh', 'README.txt']
     for package in ('tests', 'utils', 'workspace'):
         for module in _build_filelist(package):
             files.append(module)
@@ -61,7 +61,8 @@ def _create_source_archive():
     path = _ARCHIVE_FILE % suffix
     with ZipFile(path, 'w', ZIP_DEFLATED) as archive:
         for source in _build_archive_filelist():
-            archive.write(source)
+            if exists(source):
+                archive.write(source)
     return path
 
 
