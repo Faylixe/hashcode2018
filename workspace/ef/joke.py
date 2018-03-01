@@ -20,6 +20,7 @@ class Ride:
         self.end_pos = (x, y)
         self.early_start = s
         self.latest_end = f
+        self.done = False
 
 class Vehicule:
     def __init__(self, id, steps):
@@ -46,6 +47,7 @@ class Vehicule:
             self.pos = ride.end_pos 
             self.remaining_steps -= true_end
             self.done_rides.append(ride.id)
+            ride.done = True
 
 
 def main():
@@ -60,13 +62,13 @@ def main():
     rides_new = sorted(rides_new, key=lambda r: r.early_start)
 
     for ride in rides_new:
-        done = False
         for vehicule in vehicules:
             if vehicule.possible(ride) == 1:
-                done = True
                 vehicule.do(ride)
                 break
-        if not done:
+
+    for ride in rides_new:
+        if not ride.done:
             for vehicule in vehicules:
                 if vehicule.possible(ride) >= 0:
                     vehicule.do(ride)
