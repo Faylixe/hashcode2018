@@ -105,3 +105,4 @@ ENV/
 print_cookie.py
 .pytest_cache
 .vscode
+bin/

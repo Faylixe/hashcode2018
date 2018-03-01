@@ -38,6 +38,7 @@ echo "export ROUND='$round'" >> venv/bin/activate
 echo "export DATASET_PATH='dataset'" >> venv/bin/activate
 echo "export SOLUTION_PATH='solution'" >> venv/bin/activate
 echo "export WORKSPACE='$workspace'" >> venv/bin/activate
+echo "export PYBIN='python'" >> venv/bin/activate
 cat >>venv/bin/activate <<'EOL'
 _get_solution_path() {
     local directory="$SOLUTION_PATH/$2"
@@ -58,7 +59,7 @@ _commit() {
 
 _exec() {
     git pull
-    cat dataset/$2 | python -m workspace.$WORKSPACE.$1 > ${4:-/dev/stdout} 2> $3
+    cat dataset/$2 | $PYBIN -m workspace.$WORKSPACE.$1 > ${4:-/dev/stdout} 2> $3
 }
 
 _report() {
@@ -72,7 +73,7 @@ _report() {
 
 _push_result() {
     error_file=$(mktemp /tmp/hashcode_error.XXXXXX)
-    echo "Solution created using $WORKSPACE/$1.py" > README.txt
+    echo "Solution created using $WORKSPACE/$1.py with $PYBIN" > README.txt
     python -m utils.eval_solution $2 $3 2> $error_file
     rm README.txt
     if [ $? -eq 0 ]
