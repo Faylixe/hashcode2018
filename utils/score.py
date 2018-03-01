@@ -46,4 +46,4 @@ def get_score(dataset, solution):
     :param path: Solution to get score for.
     :returns: Score of the given solution.
     """
-    raise NotImplementedError()
+    return 0
