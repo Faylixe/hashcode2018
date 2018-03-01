@@ -57,11 +57,20 @@ def main():
     for ride_id, ride_array in enumerate(rides):
         rides_new.append(Ride(ride_id, ride_array))
 
+    rides_new = sorted(rides_new, key=lambda r: r.early_start)
+
     for ride in rides_new:
+        done = False
         for vehicule in vehicules:
-            if vehicule.possible(ride) >= 0:
+            if vehicule.possible(ride) == 1:
+                done = True
                 vehicule.do(ride)
                 break
+        if not done:
+            for vehicule in vehicules:
+                if vehicule.possible(ride) >= 0:
+                    vehicule.do(ride)
+                    break
 
     for vehicule in vehicules:
         N = len(vehicule.done_rides)
