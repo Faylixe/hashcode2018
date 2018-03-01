@@ -76,6 +76,6 @@ def load_dataset(stream=stdin):
     r, c, f, n, b, t = reader.next_ints()
     rides = []
     for i in range(n):
-        a, b, x, y, s, f = reader.next_ints()
-        rides.append((a, b, x, y, s, f))
+        a, b, x, y, s, u = reader.next_ints()
+        rides.append((a, b, x, y, s, u))
     return r, c, f, n, b, t, rides
