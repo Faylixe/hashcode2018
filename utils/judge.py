@@ -73,7 +73,8 @@ def _create_driver():
     """
     options = Options()
     if configuration.SELENIUM_DRIVER == 'silent':
-        options.add_argument('--headless')
+        #options.add_argument('--headless')
+        pass
     if configuration.FIREFOX_BINARY is not None:
         binary = FirefoxBinary(configuration.FIREFOX_BINARY)
         return webdriver.Firefox(
@@ -95,10 +96,11 @@ _TRIGGER_EVENT = '$c(angular.element(document.getElementById("%s")).scope().ctrl
 
 # NOTE : The dataset mapping should be updated at begining of the round.
 _DATASETS = {
-    'a': 4,
-    'small': 5,
-    'medium': 6,
-    'big': 7
+    'a': 2,
+    'b': 3,
+    'c': 4,
+    'd': 5,
+    'e': 6
 }
 
 class JudgeSite(object):
@@ -161,10 +163,10 @@ class JudgeSite(object):
         self._click((By.XPATH, _SUBMISSION_XPATH))
         # Source code upload.
         archive = _create_source_archive()
-        source_holder = self._driver.find_element_by_id('input_3')
+        source_holder = self._driver.find_element_by_id('input_1')
         source_holder.clear()
         source_holder.send_keys(archive)
-        self._driver.execute_script(_TRIGGER_EVENT % ('input_3', 'input_3'))
+        self._driver.execute_script(_TRIGGER_EVENT % ('input_1', 'input_1'))
         # Solution upload.
         path = abspath(solution)
         identifier = 'input_%d' % _DATASETS[dataset]
