@@ -14,7 +14,7 @@ def log(message):
 
 
 def main():
-    dataset = load_dataset()
+    r, c, f, n, b, t, rides = load_dataset()
     # TODO : solve problem, write to stdout.
 
 
