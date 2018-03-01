@@ -82,9 +82,9 @@ def evaluate(
     with open(_SCORE_FILE % solution, 'w') as stream:
         stream.write(str(score))
     directory = join(configuration.SOLUTION_PATH, dataset)
-    if score > _get_challenger_score(directory):
-        _set_challenger_score(directory, score)
-        copyfile(solution, join(directory, _CHALLENGER_SOLUTION_FILE))
+    #if score > _get_challenger_score(directory):
+    #    _set_challenger_score(directory, score)
+    #    copyfile(solution, join(directory, _CHALLENGER_SOLUTION_FILE))
     _send_notification(dataset, score, solution)
     with judge_factory(configuration.ROUND) as judge:
         judge.login(
