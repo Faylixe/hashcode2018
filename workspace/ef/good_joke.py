@@ -67,7 +67,7 @@ def main():
     for ride_id, ride_array in enumerate(rides):
         rides_new.append(Ride(ride_id, ride_array))
 
-    rides_new = sorted(rides_new, key=lambda r: distance(r.start_pos, r.end_pos), reverse=False)
+    rides_new = sorted(rides_new, key=lambda r: distance(r.start_pos, r.end_pos) - r.early_start, reverse=False)
 
     for ride in rides_new:
         candidates = []
