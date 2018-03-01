@@ -133,7 +133,6 @@ def main():
     normalized.sort(key=lambda ride:ride[4])
 
     step = -1
-    maxStepIdx = 0
     for ride in normalized:
         if(ride[4] != step):
             step = ride[4]
@@ -144,17 +143,11 @@ def main():
         while(vehicule is None):
             vehicule = pool.closest(ride)
             if vehicule is None:
-                if normalized[maxStepIdx][4] <= step + 1:
-                    log(normalized[maxStepIdx][4])
-                    step += 1
-                    pool.tick(step)
-                else:
-                    break
+                step += 1
+                pool.tick(step)
 
         if vehicule is not None:
             vehicule.performRide(ride)
-
-        maxStepIdx += 1
 
     for vehicule in pool.vehicules:
         print('%s %s' % (str(len(vehicule.rides)), ' '.join([str(r) for r in vehicule.rides])))
