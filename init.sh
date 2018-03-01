@@ -26,6 +26,8 @@ then
     cp utils/template.py workspace/$workspace/
 fi
 
+git config credential.helper store
+
 # Configure virtualenv.
 virtualenv venv
 # TODO : Add slack webhook
