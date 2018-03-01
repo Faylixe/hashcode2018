@@ -23,11 +23,12 @@ class Ride:
         self.done = False
 
 class Vehicule:
-    def __init__(self, id, steps):
+    def __init__(self, id, bonus, steps):
         self.id = id
         self.pos = (0, 0)
         self.remaining_steps = steps
         self.done_rides = []
+        self.bonus = bonus
 
     def possible(self, ride):
         time_to_go = distance(self.pos, ride.start_pos)
@@ -35,9 +36,9 @@ class Vehicule:
         true_end = true_start + distance(ride.start_pos, ride.end_pos)
         if true_start >= ride.early_start and true_end <= ride.latest_end and (self.remaining_steps - true_end) >= 0:
             if true_start == ride.early_start:
-                return 1 + (self.remaining_steps - true_end)
+                return self.bonus + (self.remaining_steps - true_end) 
             else:
-                return 0
+                return 0 + (self.remaining_steps - true_end)
         else:
             return -1
 
@@ -56,7 +57,7 @@ def main():
     r, c, f, n, b, t, rides = load_dataset()
     vehicules = []
     for vehicule_id in range(f):
-        vehicules.append(Vehicule(vehicule_id, t))
+        vehicules.append(Vehicule(vehicule_id, b, t))
     rides_new = []
     for ride_id, ride_array in enumerate(rides):
         rides_new.append(Ride(ride_id, ride_array))
@@ -68,7 +69,7 @@ def main():
         for vehicule in vehicules:
             score = vehicule.possible(ride)
             if score >= 0:
-                candidates.append((vehicule, score))
+                candidates.append((vehicule, score * len(vehicule.done_rides)))
         if len(candidates) > 0:
             candidates = sorted(candidates, key=lambda c: c[1], reverse=True)
             top = candidates[0]
