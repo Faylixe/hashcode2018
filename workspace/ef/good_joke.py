@@ -42,7 +42,7 @@ class Vehicule:
 
     def gain(self, ride, true_start):
         g = self.current_gain + distance(ride.start_pos, ride.end_pos)
-        if true_start == ride.start_pos:
+        if true_start == ride.early_start:
             g += self.bonus
         return g
 
