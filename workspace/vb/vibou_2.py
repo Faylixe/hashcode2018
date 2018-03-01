@@ -16,7 +16,7 @@ def costForVehicule(vehicule, ride, step):
     lbt = vehicule.busyUntil
 
 
-    return max((lbt + distToStart) - ride_start, 0)
+    return (lbt + distToStart) - ride_start
 
 class Vehicule:
     def __init__(self, id):

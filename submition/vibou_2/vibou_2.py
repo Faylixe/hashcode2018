@@ -16,7 +16,7 @@ def costForVehicule(vehicule, ride, step):
     lbt = vehicule.busyUntil
 
 
-    return max((lbt + distToStart) - ride_start, 0)
+    return (lbt + distToStart) - ride_start
 
 class Vehicule:
     def __init__(self, id):
@@ -40,13 +40,10 @@ class Vehicule:
 
     @property
     def position(self):
-        if(self.isBusy):
-            return (self.nextPosX, self.nextPosY)
-
         return (self.posx, self.posy)
 
     def canPerformRide(self, ride, step):
-        return not self.isBusy or step >= self.busyUntil
+        return not self.isBusy
 
         # startPos = ride_start_pos(ride)
         # endPos = ride_end_pos(ride)
@@ -151,6 +148,8 @@ def main():
 
     for vehicule in pool.vehicules:
         print('%s %s' % (str(len(vehicule.rides)), ' '.join([str(r) for r in vehicule.rides])))
+
+    log('Remaining Rides: %s' %(len(filter(lambda r: not r[7], normalized))))
 
 if __name__ == '__main__':
     main()
