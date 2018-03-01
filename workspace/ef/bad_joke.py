@@ -61,7 +61,7 @@ def main():
     for ride_id, ride_array in enumerate(rides):
         rides_new.append(Ride(ride_id, ride_array))
 
-    rides_new = sorted(rides_new, key=lambda r: r.latest_end)
+    rides_new = sorted(rides_new, key=lambda r: r.latest_end - r.early_start)
 
     for ride in rides_new:
         for vehicule in vehicules:
