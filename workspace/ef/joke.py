@@ -43,7 +43,8 @@ class Vehicule:
 
     def do(self, ride):
         if self.possible(ride) >= 0:
-            true_start = distance(self.pos, ride.start_pos) - ride.early_start
+            time_to_go = distance(self.pos, ride.start_pos)
+            true_start = time_to_go + (ride.early_start - time_to_go)
             true_end = true_start + distance(ride.start_pos, ride.end_pos)
             self.pos = ride.end_pos 
             self.remaining_steps -= true_end
