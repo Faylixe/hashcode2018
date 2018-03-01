@@ -30,10 +30,11 @@ class Vehicule:
         self.done_rides = []
 
     def possible(self, ride):
-        true_start = distance(self.pos, ride.start_pos) - ride.early_start
+        time_to_go = distance(self.pos, ride.start_pos)
+        true_start = time_to_go + (ride.early_start - time_to_go)
         true_end = true_start + distance(ride.start_pos, ride.end_pos)
-        if true_start >= 0 and true_end <= ride.latest_end and (self.remaining_steps - true_end) >= 0:
-            if true_start == 0:
+        if true_start >= ride.early_start and true_end <= ride.latest_end and (self.remaining_steps - true_end) >= 0:
+            if true_start == ride.early_start:
                 return 1
             else:
                 return 0
