@@ -12,7 +12,7 @@ def costForVehicule(vehicule, ride):
     startPos = ride_start_pos(ride)
     distToStart = distance(startPos, vehicule.position)
     ride_start = ride_step_range(ride)[0]
-    lbt = vehicule.lastBusyStep
+    lbt = vehicule.busyUntil
 
 
     return (lbt + distToStart) - ride_start
@@ -21,12 +21,12 @@ class Vehicule:
     def __init__(self, id):
         self.posx = 0
         self.posy = 0
-        self.lastBusyStep = 0
-
         self.nextPosX = 0
         self.nextPosY = 0
+
         self.busyUntil = 0
         self.isBusy = False
+
         self.id = id
         self.rides = []
 
@@ -34,7 +34,6 @@ class Vehicule:
         if step >= self.busyUntil:
             self.posx = self.nextPosX
             self.posy = self.nextPosY
-            self.lastBusyStep = step - 1
             self.isBusy = False
 
     @property
@@ -65,16 +64,22 @@ class Vehicule:
     def performRide(self, ride):
         startPos = ride_start_pos(ride)
         endPos = ride_end_pos(ride)
+        ride_start = ride_step_range(ride)[0]
 
         self.nextPosX = endPos[0]
         self.nextPosY = endPos[1]
 
         distToStart = distance(startPos, self.position)
+
+        if (distToStart + self.busyUntil) <= ride_start:
+            distToStart = 0
+
         rideDistance = distance(startPos, endPos)
         totalDistance = distToStart + rideDistance
         self.busyUntil += totalDistance
         self.rides.append(ride[6])
         self.isBusy = True
+        log('    - Vehicule %s is busy until step %s for total distance of %s (rd: %s)' %(self.id, self.busyUntil, totalDistance, rideDistance))
 
 
 class VehiculePool:
@@ -94,6 +99,7 @@ class VehiculePool:
                 cost = costForVehicule(vehicule, ride)
                 log("vehicule %s cost %s" %(vehicule.id, cost))
                 if bestCost is None or cost < bestCost:
+                    bestCost = cost
                     bestVehicule = vehicule
 
         if bestVehicule is not None:
@@ -132,7 +138,7 @@ def main():
             step = ride[4]
             pool.tick(step)
 
-        log('--- Ride ---')
+        log('--- RIDE %s ---' % (ride[6]))
         vehicule = None
         while(vehicule is None):
             vehicule = pool.closest(ride)
