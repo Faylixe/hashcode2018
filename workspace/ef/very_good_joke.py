@@ -12,6 +12,11 @@ def log(message):
     """ Debug logging """
     stderr.write('%s\n' % message)
 
+def crop_min(x, min=0):
+    if x < min:
+        return min
+    return x
+
 class Ride:
     def __init__(self, ride_id, ride_array):
         a, b, x, y, s, u = ride_array
@@ -33,7 +38,7 @@ class Vehicule:
 
     def possible(self, ride):
         time_to_go = distance(self.pos, ride.start_pos)
-        true_start = time_to_go + (ride.early_start - time_to_go)
+        true_start = time_to_go + crop_min(ride.early_start - time_to_go)
         true_end = true_start + distance(ride.start_pos, ride.end_pos)
         if true_start >= ride.early_start and true_end <= ride.latest_end and (self.remaining_steps - true_end) >= 0:
             return self.gain(ride, true_start)
@@ -49,7 +54,7 @@ class Vehicule:
     def do(self, ride):
         if self.possible(ride) >= 0:
             time_to_go = distance(self.pos, ride.start_pos)
-            true_start = time_to_go + (ride.early_start - time_to_go)
+            true_start = time_to_go + crop_min(ride.early_start - time_to_go)
             true_end = true_start + distance(ride.start_pos, ride.end_pos)
             self.pos = ride.end_pos 
             self.remaining_steps -= true_end
@@ -67,7 +72,7 @@ def main():
     for ride_id, ride_array in enumerate(rides):
         rides_new.append(Ride(ride_id, ride_array))
 
-    rides_new = sorted(rides_new, key=lambda r: distance((0, 0), r.end_pos) - r.early_start, reverse=False)
+    rides_new = sorted(rides_new, key=lambda r: distance(r.start_pos, r.end_pos) - distance((0, 0), r.start_pos) - crop_min(r.early_start - distance((0, 0), r.start_pos)), reverse=False)
 
     for ride in rides_new:
         candidates = []
