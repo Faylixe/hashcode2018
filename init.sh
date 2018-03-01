@@ -70,7 +70,9 @@ _report() {
 
 _push_result() {
     error_file=$(mktemp /tmp/hashcode_error.XXXXXX)
+    echo "Solution created using $WORKSPACE/$1.py" > README.txt
     python -m utils.eval_solution $2 $3 2> $error_file
+    rm README.txt
     if [ $? -eq 0 ]
     then
          _commit $1 $2
