@@ -21,15 +21,19 @@ def main():
         normalized.append([idx, ride[0], ride[1], ride[2], ride[3], ride[4], ride[5]])
         idx += 1
     normalized.sort(key=lambda ride:ride[5])
+    vehicles = [0] * f
     solution = []
     for i in range(f):
         solution.append([])
     current = 0
     for ride in normalized:
-        solution[current].append(ride[0])
-        current += 1
-        if current == f:
-            current = 0
+        i, ra, rb, rx, ry, rs, re = ride
+        candidate = vehicles.index(min(vehicles))
+        # TODO : Check if feasible.
+        solution[candidate].append(i)
+        if vehicles[candidate] < rs:
+            vehicles[candidate] = rs
+        vehicles[candidate] += abs(ra - rx) + abs(rb - ry)
     for ride in solution:
         print('%s %s' % (str(len(ride)), ' '.join([str(r) for r in ride])))
 

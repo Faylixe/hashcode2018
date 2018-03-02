@@ -46,4 +46,21 @@ def get_score(dataset, solution):
     :param path: Solution to get score for.
     :returns: Score of the given solution.
     """
-    return 0
+    r, c, f, n, b, t, R = dataset
+    score = 0
+    for vehicle in solution:
+        step = 0
+        rides = [vehicle[i] for i in range(1, len(vehicle))]
+        for ride in rides:
+            if step >= t:
+                break
+            ra, rb, rx, ry, rs, re = R[ride]
+            if rs >= step:
+                step = rs
+                score += b
+            spent = abs(ra - rx) + abs(rb - ry)
+            step += spent
+            print
+            if step <= re:
+                score += spent
+    return score
