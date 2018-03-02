@@ -9,13 +9,14 @@ from sys import stdout, stderr
 from utils.dataset import load_dataset
 from utils.utils import distance, ride_start_pos, ride_end_pos, ride_step_range, ride_distance
 
+priorityToFreeCab = True
+
 def costForVehicule(vehicule, ride, step):
 
     startPos = ride_start_pos(ride)
     distToStart = distance(startPos, vehicule.position)
     ride_start = ride_step_range(ride)[0]
     lbt = vehicule.busyUntil
-
 
     return (lbt + distToStart) - ride_start
 
@@ -92,6 +93,9 @@ class VehiculePool:
         bestVehicule = None
         bestCost = None
         for vehicule in self.vehicules:
+            if priorityToFreeCab and not vehicule.isBusy:
+                return vehicule
+
             if vehicule.canPerformRide(ride, step):
                 cost = costForVehicule(vehicule, ride, step)
                 # log("vehicule %s cost %s" %(vehicule.id, cost))
@@ -168,7 +172,7 @@ def main():
         filtered_rides.sort(key=lambda r: ride_distance(r) , reverse=True)
         pool.tick(step, max_step)
         for ride in filtered_rides:
-            log('--- RIDE %s -[%s, %s]\tpos:(%s, %s) -> (%s, %s)\tdist: %s --' % (ride[6],ride[4], ride[5], ride[0], ride[1], ride[2], ride[3], ride_distance(ride)))
+            # log('--- RIDE %s -[%s, %s]\tpos:(%s, %s) -> (%s, %s)\tdist: %s --' % (ride[6],ride[4], ride[5], ride[0], ride[1], ride[2], ride[3], ride_distance(ride)))
             vehicule = pool.closest(ride, step)
             if vehicule is not None:
                 vehicule.performRide(ride)
