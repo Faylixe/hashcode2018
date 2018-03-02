@@ -165,10 +165,10 @@ def main():
         if len(filtered_rides) == 0 or step < filtered_rides[0][4]:
             continue
 
-        filtered_rides.sort(key=lambda r: ride_distance(r))
+        filtered_rides.sort(key=lambda r: ride_distance(r) , reverse=True)
         pool.tick(step, max_step)
         for ride in filtered_rides:
-            # log('--- RIDE %s -(%s, %s) %s --' % (ride[6], ride[4], ride[5], ride[7]))
+            log('--- RIDE %s -[%s, %s]\tpos:(%s, %s) -> (%s, %s)\tdist: %s --' % (ride[6],ride[4], ride[5], ride[0], ride[1], ride[2], ride[3], ride_distance(ride)))
             vehicule = pool.closest(ride, step)
             if vehicule is not None:
                 vehicule.performRide(ride)
@@ -176,7 +176,6 @@ def main():
 
     for vehicule in pool.vehicules:
         v_rides = vehicule.rides
-        v_rides.sort()
         print('%s %s' % (str(len(v_rides)), ' '.join([str(r) for r in v_rides])))
 
     log('Remaining Rides: %s' %(len(filter(lambda r: not r[7], normalized))))
