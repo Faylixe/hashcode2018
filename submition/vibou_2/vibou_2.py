@@ -2,11 +2,12 @@
 # coding: utf8
 
 """ """
-
+from __future__ import division
 from sys import stdout, stderr
 
+
 from utils.dataset import load_dataset
-from utils.utils import distance, ride_start_pos, ride_end_pos, ride_step_range
+from utils.utils import distance, ride_start_pos, ride_end_pos, ride_step_range, ride_distance
 
 def costForVehicule(vehicule, ride, step):
 
@@ -75,7 +76,7 @@ class Vehicule:
         self.busyUntil += totalDistance
         self.rides.append(ride[6])
         self.isBusy = True
-        log('Select Vehicule %s. It will be busy until step %s for total distance of %s (rd: %s)' %(self.id, self.busyUntil, totalDistance, rideDistance))
+        # log('Select Vehicule %s. It will be busy until step %s for total distance of %s (rd: %s)' %(self.id, self.busyUntil, totalDistance, rideDistance))
 
 
 class VehiculePool:
@@ -105,8 +106,9 @@ class VehiculePool:
             return bestVehicule
 
 
-    def tick(self, step):
-        log('======= STEP %s ========' %(step))
+    def tick(self, step, max_step):
+        remaining = (step / max_step) * 100
+        log('======= STEP %s / %s (%.2f)========' %(step, max_step, remaining))
         for vehicule in self.vehicules:
             vehicule.updateStep(step)
 
@@ -115,6 +117,32 @@ class VehiculePool:
 def log(message):
     """ Debug logging """
     stderr.write('%s\n' % message)
+
+def steps(pool, max_step):
+    skipUntil = None
+    for step in range(0, max_step):
+        if skipUntil is not None and skipUntil < step:
+            continue
+
+        all_busy = True
+        minNextStep = None
+        for vehicule in pool.vehicules:
+            if vehicule.isBusy:
+                if minNextStep is None:
+                    minNextStep = vehicule.busyUntil
+                else:
+                    minNextStep = min(minNextStep, vehicule.busyUntil)
+            else:
+                all_busy = False
+                break
+
+        if not all_busy:
+            yield step
+        else:
+            skipUntil = minNextStep
+            yield minNextStep
+
+
 
 
 def main():
@@ -132,15 +160,15 @@ def main():
     for ride in normalized:
         max_step = max(max_step, ride[5])
 
-    for step in range(0, max_step):
+    for step in steps(pool, max_step):
         filtered_rides = filter(lambda r: not r[7] and r[4] <= step and r[5] >= step, normalized)
-
         if len(filtered_rides) == 0 or step < filtered_rides[0][4]:
             continue
 
-        pool.tick(step)
+        filtered_rides.sort(key=lambda r: ride_distance(r) , reverse=True)
+        pool.tick(step, max_step)
         for ride in filtered_rides:
-            log('--- RIDE %s -(%s, %s)--' % (ride[6], ride[4], ride[5]))
+            # log('--- RIDE %s -(%s, %s) %s --' % (ride[6], ride[4], ride[5], ride[7]))
             vehicule = pool.closest(ride, step)
             if vehicule is not None:
                 vehicule.performRide(ride)

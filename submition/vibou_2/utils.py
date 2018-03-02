@@ -9,3 +9,8 @@ def ride_end_pos(ride):
 
 def ride_step_range(ride):
     return (ride[4], ride[5])
+
+def ride_distance(ride):
+    start = ride_start_pos(ride)
+    end =  ride_end_pos(ride)
+    return distance(start, end)
