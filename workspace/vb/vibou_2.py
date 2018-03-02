@@ -165,7 +165,7 @@ def main():
         if len(filtered_rides) == 0 or step < filtered_rides[0][4]:
             continue
 
-        filtered_rides.sort(key=lambda r: ride_distance(r) , reverse=True)
+        filtered_rides.sort(key=lambda r: ride_distance(r))
         pool.tick(step, max_step)
         for ride in filtered_rides:
             # log('--- RIDE %s -(%s, %s) %s --' % (ride[6], ride[4], ride[5], ride[7]))
