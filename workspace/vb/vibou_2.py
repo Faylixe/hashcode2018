@@ -7,7 +7,7 @@ from sys import stdout, stderr
 
 
 from utils.dataset import load_dataset
-from utils.utils import distance, ride_start_pos, ride_end_pos, ride_step_range
+from utils.utils import distance, ride_start_pos, ride_end_pos, ride_step_range, ride_distance
 
 def costForVehicule(vehicule, ride, step):
 
@@ -165,6 +165,7 @@ def main():
         if len(filtered_rides) == 0 or step < filtered_rides[0][4]:
             continue
 
+        filtered_rides.sort(key=lambda r: ride_distance(r) , reverse=True)
         pool.tick(step, max_step)
         for ride in filtered_rides:
             # log('--- RIDE %s -(%s, %s) %s --' % (ride[6], ride[4], ride[5], ride[7]))
