@@ -175,7 +175,9 @@ def main():
                 ride[7] = True
 
     for vehicule in pool.vehicules:
-        print('%s %s' % (str(len(vehicule.rides)), ' '.join([str(r) for r in vehicule.rides])))
+        v_rides = vehicule.rides
+        v_rides.sort()
+        print('%s %s' % (str(len(v_rides)), ' '.join([str(r) for r in v_rides])))
 
     log('Remaining Rides: %s' %(len(filter(lambda r: not r[7], normalized))))
 
